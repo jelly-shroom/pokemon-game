@@ -2,7 +2,7 @@ package me.jessicasheng.pokemonGame.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import me.jessicasheng.pokemonGame.Main;
+import me.jessicasheng.pokemonGame.controller.Main;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
