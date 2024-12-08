@@ -30,8 +30,99 @@ public abstract class Trainer {
         this.pokeballInventory.put(5, Pokeball.POKEBALL);
     }
 
-    //TODO: addPokemon, usePokeball, choosePokemon, switchPokemon, releasePokemon,
-    //TODO: levelUp, becomeMaster
+    /**
+     * Adds a Pokemon to the Trainer's ownedPokemon list if Trainer successfully
+     * catches the Pokemon.
+     * @return
+     */
+    public boolean attemptCapture(WildPokemon pokemon, Pokeball pokeball) {
+        //gets the capture rate of the pokemon and the type of pokeball
+        double pokemonCatchRate = pokemon.getCatchRate();
+        double pokeballCatchRate = pokeball.getCatchRate();
+
+        //calculates the total catch rate
+        double totalCatchRate = pokemonCatchRate + pokeballCatchRate;
+        double random = Math.random() * 100;
+
+        boolean captured = random <= totalCatchRate;
+        if (captured) {
+            //adds the pokemon to the trainer's ownedPokemon list
+            //and removes the pokeball from the inventory
+            ownedPokemon.add(pokemon);
+            usePokeball(pokeball);
+        }
+
+        return captured;
+    }
+
+    /**
+     * Uses up a pokeball from the Trainer's inventory.
+     * @param pokeball
+     * @return
+     */
+    public String usePokeball(Pokeball pokeball) {
+        for (Map.Entry<Integer, Pokeball> entry : pokeballInventory.entrySet()) {
+            if (entry.getValue() == pokeball && entry.getKey() > 0) {
+                pokeballInventory.put(entry.getKey() - 1, entry.getValue());
+                return "Used a " + pokeball + "!";
+            }
+        }
+        return "You don't have any more " + pokeball + "s!";
+    }
+
+    /**
+     * chooses a pokemon from owned list for battle
+     * @param index
+     * @return
+     */
+    public Pokemon choosePokemon(int index) {
+        if (index >= 0 && index < ownedPokemon.size()) {
+            return ownedPokemon.get(index);
+        }
+        return null;
+    }
+
+    /**
+     * swaps out a pokemon currently in battle to another in
+     * the owned list
+     * @param activeIndex
+     * @param newPokemonIndex
+     */
+    public boolean switchPokemon(int activeIndex, int newPokemonIndex) {
+        if (activeIndex >= 0 && activeIndex < ownedPokemon.size() &&
+            newPokemonIndex >= 0 && newPokemonIndex < ownedPokemon.size()) {
+
+            Pokemon activePokemon = ownedPokemon.get(activeIndex);
+            Pokemon newPokemon = ownedPokemon.get(newPokemonIndex);
+
+            // Check if the active Pokemon has more than 0 HP (is in battle)
+            if (activePokemon.getHp() > 0) {
+                Collections.swap(ownedPokemon, activeIndex, newPokemonIndex);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * releases a pokemon from the owned list
+     * @param index
+     * @return
+     */
+    public Pokemon releasePokemon(int index) {
+        if (index >= 0 && index < ownedPokemon.size()) {
+            return ownedPokemon.remove(index);
+        }
+        return null;
+    }
+
+    /**
+     * levels up the trainer
+     */
+    public void levelUp() {
+        this.level++;
+    }
+
 
     //toString
     @Override

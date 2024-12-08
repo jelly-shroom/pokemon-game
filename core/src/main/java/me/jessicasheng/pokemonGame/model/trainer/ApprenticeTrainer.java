@@ -17,6 +17,10 @@ public class ApprenticeTrainer extends Trainer {
         activeQuests = new HashMap<>();
     }
 
+    public void acceptQuest(Quest quest) {
+        activeQuests.put(quest.getQuestType(), quest);
+    }
+
     //getters and setters
     public Map<QuestType, Quest> getActiveQuests() {
         return activeQuests;

@@ -16,4 +16,8 @@ public class WildPokemon extends Pokemon {
         super(name, level, hp, baseAttack, type, stage);
         this.catchRate = catchRate;
     }
+
+    public double getCatchRate() {
+        return catchRate;
+    }
 }

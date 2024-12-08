@@ -8,7 +8,17 @@ package me.jessicasheng.pokemonGame.model;
     Date created: 12/4/24
 */
 public enum Pokeball {
-    POKEBALL,
-    GREATBALL,
-    ULTRABALL;
+    POKEBALL(20),
+    GREATBALL(50),
+    ULTRABALL(100);
+
+    private double catchRate;
+
+    private Pokeball(double catchRate) {
+        this.catchRate = catchRate;
+    }
+
+    public double getCatchRate() {
+        return catchRate;
+    }
 }
