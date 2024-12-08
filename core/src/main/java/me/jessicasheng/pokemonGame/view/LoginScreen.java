@@ -2,8 +2,11 @@ package me.jessicasheng.pokemonGame.view;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import me.jessicasheng.pokemonGame.controller.Main;
 import me.jessicasheng.pokemonGame.model.trainer.*;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import me.jessicasheng.pokemonGame.model.pokemon.*;
@@ -12,27 +15,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener;
-import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
-import com.badlogic.gdx.scenes.scene2d.ui.Tooltip;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -61,19 +46,59 @@ public class LoginScreen implements Screen {
      */
     @Override
     public void show() {
-        this.skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FitViewport(640, 480));
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+
+        Table table = new Table();
+
+        table.setFillParent(true);
+
+        Label titleLabel = new Label("Login", skin);
+        TextField usernameField = new TextField("", skin);
+        usernameField.setWidth(200);
+        TextField passwordField = new TextField("", skin);
+        passwordField.setWidth(200);
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
+
+        HorizontalGroup buttonGroup = new HorizontalGroup().space(8f);
+        HorizontalGroup usernameGroup = new HorizontalGroup().space(8f);
+        HorizontalGroup passwordGroup = new HorizontalGroup().space(8f);
+
+        TextButton loginButton = (TextButton) new TextButton("Login", skin).pad(8f);
+        TextButton backButton = (TextButton) new TextButton("Back", skin).pad(8f);
+
+        loginButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // Handle login logic here
+            }
+        });
+
+        backButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ((Main)app).toMainMenu();
+            }
+        });
+
+        buttonGroup.addActor(loginButton);
+        buttonGroup.addActor(backButton);
+
+        usernameGroup.addActor(new Label("Username:", skin));
+        usernameGroup.addActor(usernameField);
+
+        passwordGroup.addActor(new Label("Password:", skin));
+        passwordGroup.addActor(passwordField);
+
+        table.add(titleLabel).colspan(1).padBottom(20).row();
+        table.add(usernameGroup.padBottom(10)).row();
+        table.add(passwordGroup.padBottom(10)).row();
+
+        table.add(buttonGroup).colspan(2).row();
+
+        stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
-//        this.shapeRenderer = new ShapeRenderer();
-
-        Window window = new Window("new screen", skin, "border");
-        window.defaults().pad(8f);
-        window.add("Type in your credentials").row();
-
-        window.pack();
-        window.setPosition(stage.getWidth() / 2 - window.getWidth() / 2,
-                stage.getHeight() / 2 - window.getHeight() / 2);
-        stage.addActor(window);
     }
 
     /**
@@ -84,7 +109,7 @@ public class LoginScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0f, 0f, 0f, 1f);
-        stage.act(Gdx.graphics.getDeltaTime());
+        stage.act(delta);
         stage.draw();
     }
 
@@ -95,7 +120,7 @@ public class LoginScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height);
+        stage.getViewport().update(width, height, true);
 
     }
 
@@ -120,8 +145,6 @@ public class LoginScreen implements Screen {
      */
     @Override
     public void hide() {
-        dispose();
-
     }
 
     /**
