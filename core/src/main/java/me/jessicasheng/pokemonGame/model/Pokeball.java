@@ -1,5 +1,7 @@
 package me.jessicasheng.pokemonGame.model;
 
+import java.io.Serializable;
+
 /*
     To-do: Class description
     @author Jessica Sheng
@@ -7,7 +9,7 @@ package me.jessicasheng.pokemonGame.model;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public enum Pokeball {
+public enum Pokeball implements Serializable {
     POKEBALL(20),
     GREATBALL(50),
     ULTRABALL(100);

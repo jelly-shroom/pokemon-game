@@ -1,0 +1,4 @@
+Quests: NAME,DESCRIPTION,REWARD,TYPE,QUESTID
+
+Participate in one battle,Battle against 1 wild Pokemon,5,BATTLE_QUEST,1
+Catch your first pokemon,Successfully catch 1 wild Pokemon, 10,POKEMON_GROWTH,1

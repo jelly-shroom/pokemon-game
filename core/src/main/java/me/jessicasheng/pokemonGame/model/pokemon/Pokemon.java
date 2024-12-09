@@ -1,5 +1,6 @@
 package me.jessicasheng.pokemonGame.model.pokemon;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /*
@@ -9,7 +10,7 @@ import java.util.Objects;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public class Pokemon {
+public class Pokemon implements Serializable {
     private String name;
     private int level;
     private int hp;

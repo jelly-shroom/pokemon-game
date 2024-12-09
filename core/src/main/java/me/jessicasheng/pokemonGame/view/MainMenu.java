@@ -47,6 +47,13 @@ public class MainMenu implements Screen{
                 ((Main)app).toLogin();
             }
         });
+        registerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ((Main)app).toRegister();
+            }
+        });
+
 
         buttonGroup.addActor(loginButton);
         buttonGroup.addActor(registerButton);

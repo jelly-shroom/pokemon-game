@@ -1,5 +1,6 @@
 package me.jessicasheng.pokemonGame.model.quests;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /*
@@ -9,7 +10,7 @@ import java.util.Objects;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public abstract class Quest {
+public abstract class Quest implements Serializable {
     private QuestType questType;
     private String questName;
     private String questDescription;

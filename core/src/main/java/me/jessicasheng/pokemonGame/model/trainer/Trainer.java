@@ -1,4 +1,5 @@
 package me.jessicasheng.pokemonGame.model.trainer;
+import java.io.Serializable;
 import java.util.*;
 import me.jessicasheng.pokemonGame.model.pokemon.*;
 import me.jessicasheng.pokemonGame.model.Pokeball;
@@ -10,12 +11,13 @@ import me.jessicasheng.pokemonGame.model.Pokeball;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public abstract class Trainer {
+public abstract class Trainer implements Serializable {
     private String username;
     private String password;
 
     private String name;
     private int level;
+    private int experience;
 
     private ArrayList<Pokemon> ownedPokemon;
     private Map<Integer, Pokeball> pokeballInventory;
@@ -130,6 +132,7 @@ public abstract class Trainer {
         return "Trainer{" +
             "name='" + name + '\'' +
             ", level=" + level +
+            ", experience=" + experience +
             ", ownedPokemon=" + ownedPokemon +
             ", pokeballInventory=" + pokeballInventory +
             '}';
@@ -143,13 +146,14 @@ public abstract class Trainer {
         Trainer trainer = (Trainer) o;
         return level == trainer.level && Objects.equals(username, trainer.username)
             && Objects.equals(password, trainer.password) && Objects.equals(name, trainer.name)
-            && Objects.equals(pokeballInventory, trainer.pokeballInventory);
+            && Objects.equals(pokeballInventory, trainer.pokeballInventory) && trainer.experience
+            == experience;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(username, password, name, level, ownedPokemon,
-            pokeballInventory);
+            pokeballInventory, experience);
     }
 
     // Getters and setters
@@ -181,8 +185,19 @@ public abstract class Trainer {
         return level;
     }
 
+    //experience bar goes back to 0 on level up
     public void setLevel(int level) {
         this.level = level;
+        this.experience = 0;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    //increases experience by a certain amount
+    public void increaseExperience(int experience) {
+        this.experience += experience;
     }
 
     public ArrayList<Pokemon> getOwnedPokemon() {

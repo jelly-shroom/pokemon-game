@@ -33,42 +33,34 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable.draw;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class LoginScreen implements Screen {
+public class RegisterScreen implements Screen {
     private final Game app;
     private Stage stage;
     private Skin skin;
     UserDataManager userManager;
-    private DialogManager dialogManager;
+    DialogManager dialogManager;
 
-    public LoginScreen(Game app) {
+
+    public RegisterScreen(Game app) {
         this.app = app;
         this.userManager = new UserDataManager();
 
     }
 
-    /**
-     * Handles the login process. If the username and password are valid, the user is transitioned to the game screen.
-     * @param username
-     * @param password
-     */
-    private void handleLogin(String username, String password) {
-        if (username.isEmpty() || password.isEmpty()) {
+    public void handleRegistration(String username, String password, String displayName) {
+        if (username.isEmpty() || password.isEmpty() || displayName.isEmpty()) {
             dialogManager.showError("Please fill in all fields");
             return;
         }
 
-        if (userManager.validateUser(username, password)) {
-            Trainer trainer = userManager.getTrainer(username);
-
-            if (trainer != null) {
-                // Transition to the game screen with the trainer object
+        if (userManager.registerUser(username, password, displayName)) {
+            Trainer trainer = new ApprenticeTrainer(username, password, displayName);
+            dialogManager.showSuccess("Registration successful! Welcome.", () -> {
                 ((Main) app).setLoggedInTrainer(trainer);
-                ((Main) app).toGame();
-            } else {
-                dialogManager.showError("Error loading trainer data. Please try again.");
-            }
+                ((Main)app).toGame();
+            });
         } else {
-            dialogManager.showError("Invalid credentials. Please check your username and password.");
+            dialogManager.showError("Username already exists");
         }
     }
 
@@ -82,31 +74,39 @@ public class LoginScreen implements Screen {
         dialogManager = new DialogManager(skin, stage);
 
 
+        //table styling
         Table table = new Table();
-
         table.setFillParent(true);
+        Label titleLabel = new Label("Register", skin);
 
-        Label titleLabel = new Label("Login", skin);
+        //text fields
         TextField usernameField = new TextField("", skin);
         usernameField.setWidth(200);
+        TextField displayNameField = new TextField("", skin);
+        displayNameField.setWidth(200);
         TextField passwordField = new TextField("", skin);
         passwordField.setWidth(200);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
 
+        //group into horizontal groups
         HorizontalGroup buttonGroup = new HorizontalGroup().space(8f);
         HorizontalGroup usernameGroup = new HorizontalGroup().space(8f);
+        HorizontalGroup displayNameGroup = new HorizontalGroup().space(8f);
         HorizontalGroup passwordGroup = new HorizontalGroup().space(8f);
 
-        TextButton loginButton = (TextButton) new TextButton("Login", skin).pad(8f);
+        //buttons
+        TextButton registerButton = (TextButton) new TextButton("Register", skin).pad(8f);
         TextButton backButton = (TextButton) new TextButton("Back", skin).pad(8f);
 
-        loginButton.addListener(new ChangeListener() {
+        registerButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 String username = usernameField.getText().trim();
                 String password = passwordField.getText().trim();
-                handleLogin(username, password);
+                String displayName = displayNameField.getText().trim();
+
+                handleRegistration(username, password, displayName);
             }
         });
 
@@ -117,7 +117,8 @@ public class LoginScreen implements Screen {
             }
         });
 
-        buttonGroup.addActor(loginButton);
+        //add buttons to group
+        buttonGroup.addActor(registerButton);
         buttonGroup.addActor(backButton);
 
         usernameGroup.addActor(new Label("Username:", skin));
@@ -126,8 +127,12 @@ public class LoginScreen implements Screen {
         passwordGroup.addActor(new Label("Password:", skin));
         passwordGroup.addActor(passwordField);
 
+        displayNameGroup.addActor(new Label("Display Name:", skin));
+        displayNameGroup.addActor(displayNameField);
+
         table.add(titleLabel).colspan(1).padBottom(20).row();
         table.add(usernameGroup.padBottom(10)).row();
+        table.add(displayNameGroup.padBottom(10)).row();
         table.add(passwordGroup.padBottom(10)).row();
 
         table.add(buttonGroup).colspan(2).row();
