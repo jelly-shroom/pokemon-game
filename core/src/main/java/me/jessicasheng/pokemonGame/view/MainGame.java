@@ -30,6 +30,7 @@ public class MainGame implements Screen {
     private final Trainer trainer;
     private Stage stage;
     private Skin skin;
+    private DialogManager dialogManager;
 
     public MainGame(Main app, Trainer trainer) {
         this.app = app;
@@ -40,25 +41,28 @@ public class MainGame implements Screen {
     public void show() {
         stage = new Stage(new FitViewport(640, 480));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        dialogManager = new DialogManager(skin, stage);
         Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        // Trainer Info
+        // trainer Info
         Label displayNameLabel = new Label("Trainer: " + trainer.getName(), skin);
         Label levelLabel = new Label("Level: " + trainer.getLevel(), skin);
         Label typeLabel = new Label("Type: " + (trainer instanceof ApprenticeTrainer ? "Apprentice Trainer" : "Master Trainer"), skin);
         Label experienceLabel = new Label("Experience: " + trainer.getExperience(), skin); // Example experience calculation
         Label ownedPokemonLabel = new Label("Owned Pokemon: " + trainer.getOwnedPokemon().size(), skin);
+
+        //TODO: implement this properly
+        Label pokeballListLable = new Label("Pokeballs: " + trainer.getPokeballInventory().size(), skin);
 //        Label activeQuestLabel = new Label("Active Quest: " + (trainer.getActiveQuest() != null ? trainer.getActiveQuest().getDescription() : "None"), skin);
 
-        // Buttons
+        // buttons
         TextButton randomEventButton = new TextButton("Encounter Random Event", skin);
         TextButton takeQuestButton = new TextButton("Take on a Quest", skin);
 
-        // Add Listeners for Buttons
         randomEventButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -73,11 +77,12 @@ public class MainGame implements Screen {
             }
         });
 
-        // Layout
+        // talbe layou
         table.add(displayNameLabel).align(Align.left).padBottom(10).row();
         table.add(levelLabel).align(Align.left).padBottom(10).row();
         table.add(typeLabel).align(Align.left).padBottom(10).row();
         table.add(experienceLabel).align(Align.left).padBottom(10).row();
+        table.add(pokeballListLable).align(Align.left).padBottom(10).row();
         table.add(ownedPokemonLabel).align(Align.left).padBottom(10).row();
 //        table.add(activeQuestLabel).align(Align.left).padBottom(20).row();
 
@@ -86,7 +91,7 @@ public class MainGame implements Screen {
     }
 
     /**
-     * Handles random events when the user clicks the "Encounter Random Event" button.
+     * handles random events when the user clicks the "random event" button.
      */
     private void handleRandomEvent() {
         Random random = new Random();
@@ -95,17 +100,17 @@ public class MainGame implements Screen {
         String message;
         switch (eventType) {
             case 0:
-                // Give Pokeballs
+                // give Pokeballs
                 trainer.getPokeballInventory().putIfAbsent(Pokeball.POKEBALL.ordinal(), Pokeball.POKEBALL);
                 message = "You found some Pokeballs!";
                 break;
             case 1:
-                // Encounter Wild Pokemon
+                // wild pokemon
                 WildPokemon wildPokemon = generateRandomWildPokemon();
-                message = "You encountered a wild " + wildPokemon.getName() + "! Try to capture it!";
+                message = "You encountered a wild " + wildPokemon.getName();
                 break;
             case 2:
-                // Gain Experience
+                // gain experience
                 trainer.levelUp();
                 message = "You gained experience and leveled up!";
                 break;
@@ -114,26 +119,16 @@ public class MainGame implements Screen {
                 break;
         }
 
-        showDialog("Random Event", message);
+        dialogManager.showDialog("Random Event", message, "OK", null);
     }
 
     /**
-     * Generates a random Wild Pokemon for the player to encounter.
+     * generates a random Wild Pokemon for the player to encounter.
      */
     private WildPokemon generateRandomWildPokemon() {
         String[] pokemonNames = {"Pikachu", "Charmander", "Bulbasaur", "Squirtle"};
         int level = new Random().nextInt(10) + 1; // Random level between 1 and 10
         return new WildPokemon(pokemonNames[new Random().nextInt(pokemonNames.length)], level, 50, 10, PokemonType.ELECTRIC, PokemonStages.BASIC, 30.0);
-    }
-
-    /**
-     * Displays a dialog with a given title and message.
-     */
-    private void showDialog(String title, String message) {
-        Dialog dialog = new Dialog(title, skin);
-        dialog.text(message);
-        dialog.button("OK");
-        dialog.show(stage);
     }
 
     @Override

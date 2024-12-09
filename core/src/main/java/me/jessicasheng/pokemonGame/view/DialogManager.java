@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import me.jessicasheng.pokemonGame.controller.UserDataManager;
 
 public class DialogManager {
     private final Skin skin;
@@ -30,13 +29,13 @@ public class DialogManager {
         dialog.setBackground(drawable);
         bgPixmap.dispose();
 
-        // Configure dialog layout
+        // dialog layout
         Table contentTable = dialog.getContentTable();
         Label messageLabel = new Label(message, skin);
         messageLabel.setWrap(true);
         contentTable.add(messageLabel).width(200).pad(20);
 
-        // Configure button layout
+        // button layout
         Table buttonTable = dialog.getButtonTable();
         buttonTable.pad(10);
 
