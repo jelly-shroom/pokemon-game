@@ -2,13 +2,12 @@ package me.jessicasheng.pokemonGame.controller;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.jessicasheng.pokemonGame.model.trainer.Trainer;
 import me.jessicasheng.pokemonGame.view.LoginScreen;
 
-import me.jessicasheng.pokemonGame.view.MainGame;
+import me.jessicasheng.pokemonGame.view.MainGameScreen;
 import me.jessicasheng.pokemonGame.view.MainMenu;
 import me.jessicasheng.pokemonGame.view.RegisterScreen;
 
@@ -56,7 +55,7 @@ public class Main extends Game {
     }
 
     public void toGame() {
-        mainGameScreen = new MainGame(this, loggedInTrainer);
+        mainGameScreen = new MainGameScreen(this, loggedInTrainer);
 
         setScreen(mainGameScreen);
     }

@@ -1,7 +1,10 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 
+import me.jessicasheng.pokemonGame.controller.QuestDataManager;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import me.jessicasheng.pokemonGame.view.UI;
+
+import java.util.*;
 
 /*
     To-do: Class description
@@ -11,25 +14,21 @@ import me.jessicasheng.pokemonGame.view.UI;
     Date created: 12/4/24
 */
 public class MasterTrainer extends Trainer {
+    private Map<Integer, Quest> createdQuests;
     private UI ui;
+
     public MasterTrainer(String username, String password, String name) {
-        super(username, password, name);
+        super(username, password, name, "Master");
+        createdQuests = new HashMap<>();
     }
 
     /**
-     * Creates a Quest object and adds it to the master file of 
+     * Creates a Quest object and adds it to the master file of
      * all quests.
      * @return
      */
-    public Quest createQuest() {
+    public Quest createQuest(String questName, String questDescription, int questReward, QuestType questType) {
         Quest newQuest = null;
-        String questChoice = ui.readln("Enter the type of quest: ");
-        QuestType questType = QuestType.valueOf(questChoice.toUpperCase());
-        
-        String questName = ui.readln("Enter the name of the quest: ");
-        String questDescription = ui.readln("Enter the description of the quest: ");
-        int questReward = Integer.parseInt(ui.readln("Enter the reward for the quest: "));
-        
         if (questType == QuestType.BATTLE) {
             newQuest = new BattleQuest(questType, questName, questDescription, questReward);
         } else if (questType == QuestType.BONDING) {
@@ -39,7 +38,31 @@ public class MasterTrainer extends Trainer {
         } else if (questType == QuestType.POKEMON_GROWTH){
             newQuest = new PokemonGrowthQuest(questType, questName, questDescription, questReward);
         }
-        
+
+        //numerically increment the key for the quest
+        int key = newQuest.getQuestID();
+        createdQuests.put(key, newQuest);
+
+        // Write the new quest to the CSV file
+        QuestDataManager.addQuest(newQuest, super.getUsername());
+
         return newQuest;
+    }
+
+    public void removeQuest(int questID) {
+        if (createdQuests.containsKey(questID)) {
+            createdQuests.remove(questID);
+            System.out.println("Quest with ID " + questID + " removed.");
+        } else {
+            System.out.println("No quest found with ID " + questID);
+        }
+    }
+
+    public Map<Integer, Quest> getCreatedQuests() {
+        return createdQuests;
+    }
+
+    public void setCreatedQuests(Map<Integer, Quest> createdQuests) {
+        this.createdQuests = createdQuests;
     }
 }

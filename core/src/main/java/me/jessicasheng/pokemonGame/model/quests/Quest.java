@@ -15,12 +15,15 @@ public abstract class Quest implements Serializable {
     private String questName;
     private String questDescription;
     private int questReward;
+    private int questID;
 
     public Quest(QuestType quest, String questName,
                  String questDescription, int questReward) {
         this.questName = questName;
         this.questDescription = questDescription;
         this.questReward = questReward;
+        this.questType = quest;
+        this.questID = generateQuestID();
     }
 
     //TODO: startQuest, completeQuest, etc
@@ -33,6 +36,7 @@ public abstract class Quest implements Serializable {
             ", questName='" + questName + '\'' +
             ", questDescription='" + questDescription + '\'' +
             ", questReward=" + questReward +
+            ", questID=" + questID +
             '}';
     }
 
@@ -42,11 +46,18 @@ public abstract class Quest implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Quest quest = (Quest) o;
-        return questReward == quest.questReward && questType == quest.questType && Objects.equals(questName, quest.questName) && Objects.equals(questDescription, quest.questDescription);
+        return questReward == quest.questReward && questType == quest.questType &&
+            Objects.equals(questName, quest.questName) &&
+            Objects.equals(questDescription, quest.questDescription)
+            && questID == quest.questID;
     }
 
     @Override
     public int hashCode() {
+        return Objects.hash(questType, questName, questDescription, questReward, questID);
+    }
+
+    private int generateQuestID() {
         return Objects.hash(questType, questName, questDescription, questReward);
     }
 
@@ -82,4 +93,9 @@ public abstract class Quest implements Serializable {
     public void setQuestReward(int questReward) {
         this.questReward = questReward;
     }
+
+    public int getQuestID() {
+        return questID;
+    }
+
 }

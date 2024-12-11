@@ -1,4 +1,5 @@
 package me.jessicasheng.pokemonGame.model.trainer;
+import me.jessicasheng.pokemonGame.controller.QuestDataManager;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import java.util.*;
 
@@ -13,12 +14,13 @@ public class ApprenticeTrainer extends Trainer {
     private Map<QuestType, Quest> activeQuests;
 
     public ApprenticeTrainer(String username, String password, String name) {
-        super(username, password, name);
+        super(username, password, name, "Apprentice");
         activeQuests = new HashMap<>();
     }
 
     public void acceptQuest(Quest quest) {
         activeQuests.put(quest.getQuestType(), quest);
+        QuestDataManager.addTaker(quest.getQuestID(), getUsername());
     }
 
     //getters and setters

@@ -19,10 +19,12 @@ public abstract class Trainer implements Serializable {
     private int level;
     private int experience;
 
+    private String trainerType;
+
     private ArrayList<Pokemon> ownedPokemon;
     private Map<Integer, Pokeball> pokeballInventory;
 
-    public Trainer(String username, String password, String name) {
+    public Trainer(String username, String password, String name, String trainerType) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -30,6 +32,7 @@ public abstract class Trainer implements Serializable {
         this.ownedPokemon = new ArrayList<>();
         this.pokeballInventory = new HashMap<>();
         this.pokeballInventory.put(5, Pokeball.POKEBALL);
+        this.trainerType = trainerType;
     }
 
     /**
@@ -214,5 +217,13 @@ public abstract class Trainer implements Serializable {
 
     public void setPokeballInventory(Map<Integer, Pokeball> pokeballInventory) {
         this.pokeballInventory = pokeballInventory;
+    }
+
+    public String getTrainerType() {
+        return trainerType;
+    }
+
+    public void setTrainerType(String trainerType) {
+        this.trainerType = trainerType;
     }
 }

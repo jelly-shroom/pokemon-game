@@ -1,4 +1,9 @@
 Quests: NAME,DESCRIPTION,REWARD,TYPE,QUESTID
 
-Participate in one battle,Battle against 1 wild Pokemon,5,BATTLE_QUEST,1
-Catch your first pokemon,Successfully catch 1 wild Pokemon, 10,POKEMON_GROWTH,1
+Participate in one battle,Battle against 1 wild Pokemon,5,BATTLE,1
+Catch your first pokemon,Successfully catch 1 wild Pokemon,10,POKEMON_GROWTH,2
+testQuest,test,1,BONDING,-543280229
+test2,test2,1,BONDING,1079236221
+test3,testquest,1,BONDING,248610446
+test4,test4,10,BONDING,-1864856540
+testsuccess,success,10,BONDING,-2000974926
