@@ -21,7 +21,7 @@ public class QuestDataManager {
     static Map<Integer, List<String>> questTakers = new HashMap<>();
 
     /**
-     * Reads quests from the CSV file and returns them as a list of Quest objects.
+     * reads quests from the CSV file and returns them as a list.
      *
      * @return List of quests from the file.
      */
@@ -61,9 +61,9 @@ public class QuestDataManager {
     }
 
     /**
-     * Appends a new quest to the CSV file.
+     * adds a new quest to the csv
      *
-     * @param quest The quest to be added.
+     * @param quest
      */
     public static void addQuest(Quest quest, String creatorUsername) {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_FILE, true))) {
@@ -79,10 +79,10 @@ public class QuestDataManager {
     }
 
     /**
-     * Associates an apprentice with a quest they have taken on.
+     * associates an apprentice with a quest they have taken on.
      *
-     * @param questId The ID of the quest.
-     * @param apprenticeUsername The username of the apprentice.
+     * @param questId
+     * @param apprenticeUsername
      */
     public static void addTaker(int questId, String apprenticeUsername) {
         questTakers.putIfAbsent(questId, new ArrayList<>());
@@ -93,7 +93,7 @@ public class QuestDataManager {
     }
 
     /**
-     * Saves quest creators to a separate CSV file.
+     * saves quest creators to a separate csv file
      */
     private static void saveQuestCreators() {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_CREATOR_FILE))) {
@@ -107,7 +107,7 @@ public class QuestDataManager {
     }
 
     /**
-     * Saves quest takers to a separate CSV file.
+     * saves quest takers to a csv file.
      */
     private static void saveQuestTakers() {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_TAKERS_FILE))) {
@@ -125,10 +125,10 @@ public class QuestDataManager {
     }
 
     /**
-     * Formats a quest object into a CSV-compatible string.
+     * formats quest into string
      *
-     * @param quest The quest to format.
-     * @return A string representation of the quest for CSV storage.
+     * @param quest
+     * @return formatted string
      */
     private static String formatQuestForCsv(Quest quest) {
         return String.join(",",
@@ -139,6 +139,9 @@ public class QuestDataManager {
             String.valueOf(quest.getQuestID()));
     }
 
+    /**
+     * loads quest creators from file
+     */
     public static void loadQuestCreators() {
         questCreators.clear();
         try (Scanner scanner = new Scanner(new File(QUEST_CREATOR_FILE))) {
@@ -156,10 +159,18 @@ public class QuestDataManager {
         }
     }
 
+    /**
+     * gets the creator of a quest
+     * @param questId
+     * @return
+     */
     public static String getQuestCreator(int questId) {
         return questCreators.get(questId);
     }
 
+    /**
+     * loads quest takers
+     */
     public static void loadQuestTakers() {
         questTakers.clear();
         try (Scanner scanner = new Scanner(new File(QUEST_TAKERS_FILE))) {
@@ -177,11 +188,14 @@ public class QuestDataManager {
         }
     }
 
+    /**
+     * gets list of quest takers
+     * @param questId
+     * @return
+     */
     public static List<String> getQuestTakers(int questId) {
         return questTakers.getOrDefault(questId, new ArrayList<>());
     }
-
-
 
 }
 

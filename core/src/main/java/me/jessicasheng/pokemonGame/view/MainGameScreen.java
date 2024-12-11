@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import me.jessicasheng.pokemonGame.controller.Main;
+import me.jessicasheng.pokemonGame.controller.QuestDataManager;
 import me.jessicasheng.pokemonGame.model.Pokeball;
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonStages;
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonType;
@@ -27,6 +28,7 @@ import me.jessicasheng.pokemonGame.model.trainer.MasterTrainer;
 import me.jessicasheng.pokemonGame.model.trainer.Trainer;
 
 import java.util.*;
+import java.util.List;
 
 public class MainGameScreen implements Screen {
     private final Main app;
@@ -67,21 +69,13 @@ public class MainGameScreen implements Screen {
         ScrollPane questScrollPane = createQuestScrollPane();
 
 
-        // buttons
+        // random event button
         TextButton randomEventButton = new TextButton("Encounter Random Event", skin);
-        TextButton takeQuestButton = new TextButton("Take on a Quest", skin);
 
         randomEventButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 handleRandomEvent();
-            }
-        });
-
-        takeQuestButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ((Main) app).toMainMenu();
             }
         });
 
@@ -104,7 +98,17 @@ public class MainGameScreen implements Screen {
 
         // Only show takeQuestButton for ApprenticeTrainer
         if (trainer instanceof ApprenticeTrainer) {
-            table.add(takeQuestButton).width(200).height(50);
+            TextButton takeQuestButton = new TextButton("Take on a Quest", skin);
+
+            takeQuestButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    showAvailableQuestsDialog();
+                }
+            });
+
+            table.add(takeQuestButton).width(200).height(50).padBottom(20).row();
+
         } else if (trainer instanceof MasterTrainer) {
             TextButton createQuestButton = new TextButton("Create Quest", skin);
             createQuestButton.addListener(new ChangeListener() {
@@ -118,6 +122,10 @@ public class MainGameScreen implements Screen {
         }
     }
 
+    /**
+     * creates table to display pokeball inventory
+     * @return
+     */
     private Table createPokeballTable() {
         Table pokeballTable = new Table(skin);
 
@@ -131,16 +139,20 @@ public class MainGameScreen implements Screen {
         return pokeballTable;
     }
 
+    /**
+     * creates a scroll pane to display quests
+     * @return
+     */
     private ScrollPane createQuestScrollPane() {
         Table questTable = new Table(skin);
 
         if (trainer instanceof ApprenticeTrainer) {
             // Display active quests for ApprenticeTrainer
-            Map<QuestType, Quest> activeQuests = ((ApprenticeTrainer) trainer).getActiveQuests();
+            Map<Integer, Quest> activeQuests = ((ApprenticeTrainer) trainer).getActiveQuests();
             if (activeQuests.isEmpty()) {
                 questTable.add(new Label("No active quests.", skin)).padBottom(10).row();
             } else {
-                for (Map.Entry<QuestType, Quest> entry : activeQuests.entrySet()) {
+                for (Map.Entry<Integer, Quest> entry : activeQuests.entrySet()) {
                     Quest quest = entry.getValue();
                     questTable.add(new Label(quest.getQuestName() + ": " + quest.getQuestDescription(), skin)).padBottom(10).row();
                 }
@@ -162,6 +174,9 @@ public class MainGameScreen implements Screen {
     }
 
 
+    /**
+     * refreshes UI
+     */
     //needed to make sure ui updates when quests are added or taken on
     private void refreshQuests() {
         ScrollPane updatedScrollPane = createQuestScrollPane();
@@ -171,6 +186,70 @@ public class MainGameScreen implements Screen {
         show(); // Rebuilds all UI elements using updated data
     }
 
+    /**
+     * shows available quests to take on
+     * only for apprentice trainers
+     */
+    private void showAvailableQuestsDialog() {
+        if (!(trainer instanceof ApprenticeTrainer)) return;
+
+        ApprenticeTrainer apprentice = (ApprenticeTrainer) trainer;
+        List<Quest> availableQuests = QuestDataManager.loadQuests();
+
+        // Create the dialog
+        Dialog dialog = new Dialog("Available Quests", skin);
+        Table contentTable = new Table(skin);
+
+        if (availableQuests.isEmpty()) {
+            contentTable.add(new Label("No available quests.", skin)).padBottom(10).row();
+        } else {
+            for (Quest quest : availableQuests) {
+                Table questRow = new Table(skin);
+
+                // Quest details
+                Label questDetails = new Label(
+                    "Name: " + quest.getQuestName() + "\n" +
+                        "Description: " + quest.getQuestDescription() + "\n" +
+                        "Reward: " + quest.getQuestReward(),
+                    skin
+                );
+                questDetails.setWrap(true);
+
+                // Take quest button
+                TextButton takeQuestButton = new TextButton("Take Quest", skin);
+                takeQuestButton.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        // Add the quest to the apprentice's active quests
+                        apprentice.acceptQuest(quest);
+                        QuestDataManager.addTaker(quest.getQuestID(), apprentice.getUsername());
+
+                        // Refresh UI
+                        refreshQuests();
+
+                        // Close the dialog
+                        dialog.hide();
+                    }
+                });
+
+                // Add details and button to the row
+                questRow.add(questDetails).width(300).padRight(10);
+                questRow.add(takeQuestButton).width(100);
+                contentTable.add(questRow).padBottom(10).row();
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(contentTable, skin);
+        dialog.getContentTable().add(scrollPane).width(450).height(300);
+        dialog.button("Close").padTop(10);
+        dialog.show(stage);
+    }
+
+
+    /**
+     * shows dialog to create a new quest
+     * only for master trainers
+     */
     private void showCreateQuestDialog() {
         if (!(trainer instanceof MasterTrainer)) return;
 
@@ -245,9 +324,6 @@ public class MainGameScreen implements Screen {
         // Show the dialog
         dialog.show(stage);
     }
-
-
-
 
     /**
      * handles random events when the user clicks the "random event" button.

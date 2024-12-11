@@ -26,12 +26,20 @@ public class RegisterScreen implements Screen {
 
     }
 
+    /**
+     * if username is unique, new trainer is created and added to the game
+     * @param username
+     * @param password
+     * @param displayName
+     */
     public void handleRegistration(String username, String password, String displayName) {
+        //fields cant be empty
         if (username.isEmpty() || password.isEmpty() || displayName.isEmpty()) {
             dialogManager.showError("Please fill in all fields");
             return;
         }
 
+        //if regusterUser returns true (unique username)
         if (userManager.registerUser(username, password, displayName)) {
             Trainer trainer = new ApprenticeTrainer(username, password, displayName);
             dialogManager.showSuccess("Registration successful! Welcome.", () -> {

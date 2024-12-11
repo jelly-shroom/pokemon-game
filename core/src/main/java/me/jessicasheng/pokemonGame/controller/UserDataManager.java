@@ -26,6 +26,9 @@ public class UserDataManager {
         loadUserData();
     }
 
+    /**
+     * loads use rdata from file
+     */
     private void loadUserData() {
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
@@ -68,8 +71,14 @@ public class UserDataManager {
         }
     }
 
-    private Map<QuestType, Quest> loadActiveQuests(ApprenticeTrainer apprentice) {
-        Map<QuestType, Quest> activeQuests = new HashMap<>();
+    /**
+     * loads active quests
+     * only for paprentice trainers
+     * @param apprentice
+     * @return
+     */
+    private Map<Integer, Quest> loadActiveQuests(ApprenticeTrainer apprentice) {
+        Map<Integer, Quest> activeQuests = new HashMap<>();
         List<Quest> allQuests = QuestDataManager.loadQuests();
 
         // Ensure questTakers map is loaded
@@ -79,7 +88,7 @@ public class UserDataManager {
         for (Quest quest : allQuests) {
             List<String> takers = QuestDataManager.getQuestTakers(quest.getQuestID());
             if (takers != null && takers.contains(apprentice.getUsername())) {
-                activeQuests.put(quest.getQuestType(), quest);
+                activeQuests.put(quest.getQuestID(), quest);
             }
         }
 
@@ -87,6 +96,12 @@ public class UserDataManager {
     }
 
 
+    /**
+     * loads created quests
+     * only for master trainers
+     * @param master
+     * @return
+     */
     private Map<Integer, Quest> loadCreatedQuests(MasterTrainer master) {
         Map<Integer, Quest> createdQuests = new HashMap<>();
         List<Quest> allQuests = QuestDataManager.loadQuests();
@@ -105,8 +120,9 @@ public class UserDataManager {
         return createdQuests;
     }
 
-
-
+    /**
+     * saves user data to file
+     */
     public void saveUserData() {
         try (FileOutputStream fos = new FileOutputStream(FILE_PATH);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -115,6 +131,12 @@ public class UserDataManager {
         }
     }
 
+    /**
+     * validates user when logging in
+     * @param username
+     * @param password
+     * @return
+     */
     public boolean validateUser(String username, String password) {
         System.out.println("Validating user: " + username);
         Trainer trainer = userDatabase.get(username);
@@ -131,8 +153,16 @@ public class UserDataManager {
         return trainer.getPassword().equals(password);
     }
 
+    /**
+     * registers a new user to system
+     * @param username
+     * @param password
+     * @param displayName
+     * @return
+     */
     public boolean registerUser(String username, String password, String displayName) {
         boolean validUsername = true;
+        // Check if username already exists
         if (userDatabase.containsKey(username)) {
             validUsername = false;
         } else {

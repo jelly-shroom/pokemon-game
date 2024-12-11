@@ -11,7 +11,7 @@ import java.util.*;
     Date created: 12/4/24
 */
 public class ApprenticeTrainer extends Trainer {
-    private Map<QuestType, Quest> activeQuests;
+    private Map<Integer, Quest> activeQuests;
 
     public ApprenticeTrainer(String username, String password, String name) {
         super(username, password, name, "Apprentice");
@@ -19,16 +19,16 @@ public class ApprenticeTrainer extends Trainer {
     }
 
     public void acceptQuest(Quest quest) {
-        activeQuests.put(quest.getQuestType(), quest);
+        activeQuests.put(quest.getQuestID(), quest);
         QuestDataManager.addTaker(quest.getQuestID(), getUsername());
     }
 
     //getters and setters
-    public Map<QuestType, Quest> getActiveQuests() {
+    public Map<Integer, Quest> getActiveQuests() {
         return activeQuests;
     }
 
-    public void setActiveQuests(Map<QuestType, Quest> activeQuests) {
+    public void setActiveQuests(Map<Integer, Quest> activeQuests) {
         this.activeQuests = activeQuests;
     }
 }
