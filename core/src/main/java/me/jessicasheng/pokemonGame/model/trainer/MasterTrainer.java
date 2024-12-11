@@ -1,6 +1,7 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 
 import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import me.jessicasheng.pokemonGame.view.UI;
 
@@ -31,13 +32,13 @@ public class MasterTrainer extends Trainer {
                              QuestType questType, int completionGoal) {
         Quest newQuest = null;
         if (questType == QuestType.BATTLE) {
-            newQuest = new BattleQuest(questType, questName, questDescription, questReward, completionGoal);
+            newQuest = new BattleQuest(questType, questName, questDescription, questReward, completionGoal, 0);
         } else if (questType == QuestType.BONDING) {
-            newQuest = new BondQuest(questType, questName, questDescription, questReward, completionGoal);
+            newQuest = new BondQuest(questType, questName, questDescription, questReward, completionGoal, 0);
         } else if (questType == QuestType.TRAINER_GROWTH){
-            newQuest = new TrainerGrowthQuest(questType, questName, questDescription, questReward, completionGoal);
+            newQuest = new TrainerGrowthQuest(questType, questName, questDescription, questReward, completionGoal, 0);
         } else if (questType == QuestType.POKEMON_GROWTH){
-            newQuest = new PokemonGrowthQuest(questType, questName, questDescription, questReward, completionGoal);
+            newQuest = new PokemonGrowthQuest(questType, questName, questDescription, questReward, completionGoal, 0);
         }
 
         //numerically increment the key for the quest
@@ -65,5 +66,21 @@ public class MasterTrainer extends Trainer {
 
     public void setCreatedQuests(Map<Integer, Quest> createdQuests) {
         this.createdQuests = createdQuests;
+    }
+
+    /**
+     * @param pokemon
+     */
+    @Override
+    public void initiateBattle(Object pokemon) {
+
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void flee() {
+
     }
 }

@@ -9,8 +9,8 @@ package me.jessicasheng.pokemonGame.model.quests;
 */
 public class BattleQuest extends Quest{
     public BattleQuest(QuestType quest, String questName,
-                    String questDescription, int questReward, int completionGoal) {
-        super(quest, questName, questDescription, questReward, completionGoal);
+                    String questDescription, int questReward, int completionGoal, int progress) {
+        super(quest, questName, questDescription, questReward, completionGoal, progress);
     }
 
     //TODO: battleWildPokemon, winBattle, loseBattle

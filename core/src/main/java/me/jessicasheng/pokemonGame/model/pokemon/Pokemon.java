@@ -12,6 +12,8 @@ import java.util.Objects;
 */
 public class Pokemon implements Serializable {
     private String name;
+    private PokemonType type1;
+    private PokemonType type2;
     private int level;
     private int hp;
     private int baseAttack;
@@ -19,12 +21,15 @@ public class Pokemon implements Serializable {
     private PokemonType type;
     private PokemonStages stage;
 
-    public Pokemon(String name, int level, int hp, int baseAttack, PokemonType type, PokemonStages stage) {
+    public Pokemon(String name, PokemonType type1, PokemonType type2,
+                   int hp, int baseAttack,
+                   int level, PokemonStages stage) {
         this.name = name;
+        this.type1 = type1;
+        this.type2 = type2;
         this.level = level;
         this.hp = hp;
         this.baseAttack = baseAttack;
-        this.type = type;
         this.stage = stage;
     }
 
@@ -90,19 +95,27 @@ public class Pokemon implements Serializable {
         this.baseAttack = baseAttack;
     }
 
-    public PokemonType getType() {
-        return type;
-    }
-
-    public void setType(PokemonType type) {
-        this.type = type;
-    }
-
     public PokemonStages getStage() {
         return stage;
     }
 
     public void setStage(PokemonStages stage) {
         this.stage = stage;
+    }
+
+    public PokemonType getType1() {
+        return type1;
+    }
+
+    public void setType1(PokemonType type1) {
+        this.type1 = type1;
+    }
+
+    public PokemonType getType2() {
+        return type2;
+    }
+
+    public void setType2(PokemonType type2) {
+        this.type2 = type2;
     }
 }

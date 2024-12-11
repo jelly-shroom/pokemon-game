@@ -34,24 +34,25 @@ public class QuestDataManager {
                 String line = scanner.nextLine();
                 System.out.println("Reading line: " + line);
                 String[] parts = line.split(",");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String name = parts[0];
                     String description = parts[1];
                     int reward = Integer.parseInt(parts[2]);
                     QuestType type = QuestType.valueOf(parts[3].toUpperCase());
                     int goal = Integer.parseInt(parts[4]);
-                    int questID = Integer.parseInt(parts[5]);
+                    int progress = Integer.parseInt(parts[5]);
+                    int questID = Integer.parseInt(parts[6]);
 
 
                     // Create a new Quest object (use your concrete subclass if needed)
                     if (type == QuestType.BATTLE) {
-                        quests.add(new BattleQuest(type, name, description, reward, goal));
+                        quests.add(new BattleQuest(type, name, description, reward, goal, progress));
                     } else if (type == QuestType.BONDING) {
-                        quests.add(new BondQuest(type, name, description, reward, goal));
+                        quests.add(new BondQuest(type, name, description, reward, goal, progress));
                     } else if (type == QuestType.TRAINER_GROWTH) {
-                        quests.add(new TrainerGrowthQuest(type, name, description, reward, goal));
+                        quests.add(new TrainerGrowthQuest(type, name, description, reward, goal, progress));
                     } else if (type == QuestType.POKEMON_GROWTH) {
-                        quests.add(new PokemonGrowthQuest(type, name, description, reward, goal));
+                        quests.add(new PokemonGrowthQuest(type, name, description, reward, goal, progress));
                     } else {
                         System.out.println("Unknown quest type: " + type);
                     }
@@ -142,6 +143,7 @@ public class QuestDataManager {
             String.valueOf(quest.getQuestReward()),
             quest.getQuestType().name(),
             String.valueOf(quest.getCompletionGoal()),
+            String.valueOf(quest.getProgress()),
             String.valueOf(quest.getQuestID()));
     }
 

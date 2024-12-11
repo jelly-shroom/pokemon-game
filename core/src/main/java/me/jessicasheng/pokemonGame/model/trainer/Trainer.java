@@ -1,8 +1,12 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 import java.io.Serializable;
 import java.util.*;
+
+import me.jessicasheng.pokemonGame.model.BattleCapable;
 import me.jessicasheng.pokemonGame.model.pokemon.*;
 import me.jessicasheng.pokemonGame.model.Pokeball;
+import me.jessicasheng.pokemonGame.model.quests.Quest;
+import me.jessicasheng.pokemonGame.model.quests.QuestType;
 
 /*
     To-do: Class description
@@ -11,7 +15,7 @@ import me.jessicasheng.pokemonGame.model.Pokeball;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public abstract class Trainer implements Serializable {
+public abstract class Trainer implements Serializable, BattleCapable {
     private String username;
     private String password;
 
@@ -41,38 +45,85 @@ public abstract class Trainer implements Serializable {
      * @return
      */
     public boolean attemptCapture(WildPokemon pokemon, Pokeball pokeball) {
-        //gets the capture rate of the pokemon and the type of pokeball
+        // Get the capture rate of the Pokémon and the Pokéball
         double pokemonCatchRate = pokemon.getCatchRate();
         double pokeballCatchRate = pokeball.getCatchRate();
 
-        //calculates the total catch rate
+        // Calculate total catch rate
         double totalCatchRate = pokemonCatchRate + pokeballCatchRate;
-        double random = Math.random() * 100;
+        double randomValue = Math.random() * 100;
 
-        boolean captured = random <= totalCatchRate;
+        boolean captured = randomValue <= totalCatchRate;
+
         if (captured) {
-            //adds the pokemon to the trainer's ownedPokemon list
-            //and removes the pokeball from the inventory
+            // Add Pokémon to owned list
             ownedPokemon.add(pokemon);
-            usePokeball(pokeball);
+            System.out.println("You successfully captured " + pokemon.getName() + "!");
+        } else {
+            System.out.println(pokemon.getName() + " escaped!");
+        }
+
+        // Use up one Pokéball
+        if (!usePokeball(pokeball)) {
+            System.out.println("You don't have any more " + pokeball.name() + "s!");
         }
 
         return captured;
     }
+
+    @Override
+    public void initiateBattle(Object opponent) {
+        if (opponent instanceof WildPokemon) {
+            WildPokemon wildPokemon = (WildPokemon) opponent;
+            Random random = new Random();
+
+            // Determine if the Pokémon flees
+            boolean pokemonFlees = random.nextBoolean(); // 50% chance for fleeing
+            if (pokemonFlees) {
+                System.out.println(wildPokemon.getName() + " fled from the battle!");
+                return;
+            }
+
+            // Count towards active battle quest if applicable
+            if (this instanceof ApprenticeTrainer) {
+                ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) this;
+                Quest activeQuest = apprenticeTrainer.getActiveQuests().get(QuestType.BATTLE);
+                if (activeQuest != null) {
+                    activeQuest.incrementProgress(); // Increment quest progress
+                    System.out.println("Your active battle quest progress has been updated!");
+                }
+            }
+
+            System.out.println("You defeated " + wildPokemon.getName() + "!");
+        }
+    }
+
+    /**
+     * Allows the trainer to flee from a battle.
+     */
+    @Override
+    public void flee() {
+        System.out.println("You fled from the battle!");
+    }
+
 
     /**
      * Uses up a pokeball from the Trainer's inventory.
      * @param pokeball
      * @return
      */
-    public String usePokeball(Pokeball pokeball) {
+    private boolean usePokeball(Pokeball pokeball) {
         for (Map.Entry<Integer, Pokeball> entry : pokeballInventory.entrySet()) {
             if (entry.getValue() == pokeball && entry.getKey() > 0) {
-                pokeballInventory.put(entry.getKey() - 1, entry.getValue());
-                return "Used a " + pokeball + "!";
+                int quantity = entry.getKey();
+                pokeballInventory.remove(quantity);
+                if (quantity > 1) {
+                    pokeballInventory.put(quantity - 1, pokeball);
+                }
+                return true;
             }
         }
-        return "You don't have any more " + pokeball + "s!";
+        return false;
     }
 
     /**

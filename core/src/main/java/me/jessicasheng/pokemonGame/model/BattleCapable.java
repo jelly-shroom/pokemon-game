@@ -10,6 +10,6 @@ import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
     Date created: 12/8/24
 */
 public interface BattleCapable {
-    void initiateBattle(Pokemon pokemon);
+    void initiateBattle(Object opponent);
     void flee();
 }

@@ -17,8 +17,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import me.jessicasheng.pokemonGame.controller.Main;
 import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+import me.jessicasheng.pokemonGame.controller.PokemonDataReader;
 import me.jessicasheng.pokemonGame.model.Pokeball;
-import me.jessicasheng.pokemonGame.model.pokemon.PokemonStages;
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonType;
 import me.jessicasheng.pokemonGame.model.pokemon.WildPokemon;
 import me.jessicasheng.pokemonGame.model.quests.Quest;
@@ -280,7 +280,7 @@ public class MainGameScreen implements Screen {
 
                         this.hide(); // Close the dialog
                     } catch (NumberFormatException e) {
-                        dialogManager.showDialog("Error", "Invalid reward amount.", "OK", null);
+                        dialogManager.showDialog("Error", "Invalid reward amount.", "OK", null, null, null);
                     }
                 }
             }
@@ -362,7 +362,8 @@ public class MainGameScreen implements Screen {
             case 1:
                 // wild pokemon
                 WildPokemon wildPokemon = generateRandomWildPokemon();
-                message = "You encountered a wild " + wildPokemon.getName();
+                handleWildPokemonEncounter(wildPokemon);
+                message = "You encountered a wild Pokémon!";
                 break;
             case 2:
                 // gain experience
@@ -374,17 +375,88 @@ public class MainGameScreen implements Screen {
                 break;
         }
 
-        dialogManager.showDialog("Random Event", message, "OK", null);
+        dialogManager.showDialog("Random Event", message, "OK", null, null, null);
     }
 
     /**
      * generates a random Wild Pokemon for the player to encounter.
      */
     private WildPokemon generateRandomWildPokemon() {
-        String[] pokemonNames = {"Pikachu", "Charmander", "Bulbasaur", "Squirtle"};
-        int level = new Random().nextInt(10) + 1; // Random level between 1 and 10
-        return new WildPokemon(pokemonNames[new Random().nextInt(pokemonNames.length)], level, 50, 10, PokemonType.ELECTRIC, PokemonStages.BASIC, 30.0);
+        List<WildPokemon> pokemonList = PokemonDataReader.loadPokemonData();
+        if (pokemonList.isEmpty()) {
+            throw new IllegalStateException("No Pokémon data available.");
+        }
+
+        Random random = new Random();
+        return pokemonList.get(random.nextInt(pokemonList.size()));
     }
+
+    private void handleWildPokemonEncounter(WildPokemon wildPokemon) {
+        Random random = new Random();
+        boolean pokemonWantsToFight = random.nextBoolean(); // 50% chance to initiate a battle
+
+        if (pokemonWantsToFight) {
+            // Wild Pokémon initiates battle
+            dialogManager.showDialog("Wild Pokémon Battle",
+                wildPokemon.getName() + " wants to fight!",
+                "Flee", () -> trainer.flee(),
+                "Fight", () -> trainer.initiateBattle(wildPokemon));
+        } else {
+            // Wild Pokémon is passive; give options to fight or capture
+            dialogManager.showDialog("Wild Pokémon Encounter",
+                wildPokemon.getName() + " is passive. What do you want to do?",
+                "Capture", () -> showPokeballSelectionDialog(wildPokemon),
+                "Fight", () -> trainer.initiateBattle(wildPokemon));
+        }
+    }
+
+    private void showPokeballSelectionDialog(WildPokemon wildPokemon) {
+        Map<Integer, Pokeball> pokeballInventory = trainer.getPokeballInventory();
+        if (pokeballInventory.isEmpty()) {
+            dialogManager.showDialog("No Pokéballs",
+                "You don't have any Pokéballs!",
+                "OK", null, null, null);
+            return;
+        }
+
+        Dialog pokeballDialog = new Dialog("Select a Pokéball", skin);
+        Table pokeballTable = new Table(skin);
+
+        // Dynamically create buttons for each Pokéball in inventory
+        for (Map.Entry<Integer, Pokeball> entry : pokeballInventory.entrySet()) {
+            int quantity = entry.getKey();
+            Pokeball pokeball = entry.getValue();
+
+            if (quantity > 0) { // Only show Pokéballs with quantities > 0
+                TextButton pokeballButton = new TextButton(pokeball.name() + " (" + quantity + ")", skin);
+                pokeballButton.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        boolean success = trainer.attemptCapture(wildPokemon, pokeball); // Attempt capture
+                        String resultMessage = success ?
+                            "You successfully captured " + wildPokemon.getName() + "!" :
+                            wildPokemon.getName() + " escaped!";
+                        dialogManager.showDialog("Capture Result", resultMessage, "OK", null
+                            , null, null);
+
+                        // Close the selection dialog
+                        pokeballDialog.hide();
+                    }
+                });
+                pokeballTable.add(pokeballButton).pad(10).row();
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(pokeballTable, skin);
+        pokeballDialog.getContentTable().add(scrollPane).width(300).height(200);
+        pokeballDialog.button("Cancel").padTop(10); // Add a cancel button
+        pokeballDialog.show(stage);
+    }
+
+
+
+
+
 
     @Override
     public void render(float delta) {

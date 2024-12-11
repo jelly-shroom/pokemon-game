@@ -12,9 +12,9 @@ import java.util.Objects;
 public class OwnedPokemon extends Pokemon {
     private int experience;
 
-    public OwnedPokemon(String name, int level, int exp, int hp,
-                        int baseAttack, PokemonType type, PokemonStages stage) {
-        super(name, level, hp, baseAttack, type, stage);
+    public OwnedPokemon(String name, PokemonType type1, PokemonType type2, int hp,
+                        int baseAttack, int level, PokemonStages stage, int exp) {
+        super(name, type1, type2, hp, baseAttack, level, stage);
         this.experience = exp;
     }
 

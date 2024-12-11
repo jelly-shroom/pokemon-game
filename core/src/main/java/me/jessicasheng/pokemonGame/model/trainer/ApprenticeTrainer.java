@@ -1,5 +1,6 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import java.util.*;
 
@@ -30,5 +31,21 @@ public class ApprenticeTrainer extends Trainer {
 
     public void setActiveQuests(Map<Integer, Quest> activeQuests) {
         this.activeQuests = activeQuests;
+    }
+
+    /**
+     * @param pokemon
+     */
+    @Override
+    public void initiateBattle(Object pokemon) {
+
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void flee() {
+
     }
 }

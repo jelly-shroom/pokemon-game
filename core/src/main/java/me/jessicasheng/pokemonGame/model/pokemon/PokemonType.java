@@ -25,7 +25,8 @@ public enum PokemonType {
     DRAGON,
     DARK,
     STEEL,
-    FAIRY;
+    FAIRY,
+    NONE;
 
     /**
      * determines whether a Pokemon is strong or weak against another Pokemon
