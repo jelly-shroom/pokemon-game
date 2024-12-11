@@ -15,15 +15,17 @@ public abstract class Quest implements Serializable {
     private String questName;
     private String questDescription;
     private int questReward;
+    private int completionGoal;
     private int questID;
 
     public Quest(QuestType quest, String questName,
-                 String questDescription, int questReward) {
+                 String questDescription, int questReward, int completionGoal) {
         this.questName = questName;
         this.questDescription = questDescription;
         this.questReward = questReward;
         this.questType = quest;
         this.questID = generateQuestID();
+        this.completionGoal = completionGoal;
     }
 
     //TODO: startQuest, completeQuest, etc
@@ -96,6 +98,10 @@ public abstract class Quest implements Serializable {
 
     public int getQuestID() {
         return questID;
+    }
+
+    public int getCompletionGoal() {
+        return completionGoal;
     }
 
 }

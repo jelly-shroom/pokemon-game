@@ -10,8 +10,8 @@ package me.jessicasheng.pokemonGame.model.quests;
 public class BondQuest extends Quest{
 
     public BondQuest(QuestType quest, String questName,
-                     String questDescription, int questReward) {
-        super(quest, questName, questDescription, questReward);
+                     String questDescription, int questReward, int completionGoal) {
+        super(quest, questName, questDescription, questReward, completionGoal);
     }
 
     //TODO: playWithPokemon, feedPokemon, etc

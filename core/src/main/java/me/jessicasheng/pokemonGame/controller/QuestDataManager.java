@@ -32,23 +32,26 @@ public class QuestDataManager {
             scanner.nextLine();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                System.out.println("Reading line: " + line);
                 String[] parts = line.split(",");
-                if (parts.length == 5) {
+                if (parts.length == 6) {
                     String name = parts[0];
                     String description = parts[1];
                     int reward = Integer.parseInt(parts[2]);
                     QuestType type = QuestType.valueOf(parts[3].toUpperCase());
-                    int questId = Integer.parseInt(parts[4]);
+                    int goal = Integer.parseInt(parts[4]);
+                    int questID = Integer.parseInt(parts[5]);
+
 
                     // Create a new Quest object (use your concrete subclass if needed)
                     if (type == QuestType.BATTLE) {
-                        quests.add(new BattleQuest(type, name, description, reward));
+                        quests.add(new BattleQuest(type, name, description, reward, goal));
                     } else if (type == QuestType.BONDING) {
-                        quests.add(new BondQuest(type, name, description, reward));
+                        quests.add(new BondQuest(type, name, description, reward, goal));
                     } else if (type == QuestType.TRAINER_GROWTH) {
-                        quests.add(new TrainerGrowthQuest(type, name, description, reward));
+                        quests.add(new TrainerGrowthQuest(type, name, description, reward, goal));
                     } else if (type == QuestType.POKEMON_GROWTH) {
-                        quests.add(new PokemonGrowthQuest(type, name, description, reward));
+                        quests.add(new PokemonGrowthQuest(type, name, description, reward, goal));
                     } else {
                         System.out.println("Unknown quest type: " + type);
                     }
@@ -67,7 +70,9 @@ public class QuestDataManager {
      */
     public static void addQuest(Quest quest, String creatorUsername) {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_FILE, true))) {
+            String formattedQuest = formatQuestForCsv(quest);
             writer.println(formatQuestForCsv(quest));
+            System.out.println("Added quest to CSV: " + formattedQuest);
         } catch (IOException e) {
             System.out.println("Error writing to quest file.");
             e.printStackTrace();
@@ -136,6 +141,7 @@ public class QuestDataManager {
             quest.getQuestDescription(),
             String.valueOf(quest.getQuestReward()),
             quest.getQuestType().name(),
+            String.valueOf(quest.getCompletionGoal()),
             String.valueOf(quest.getQuestID()));
     }
 

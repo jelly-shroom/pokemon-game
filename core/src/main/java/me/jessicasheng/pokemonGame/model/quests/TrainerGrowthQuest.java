@@ -9,8 +9,8 @@ package me.jessicasheng.pokemonGame.model.quests;
 */
 public class TrainerGrowthQuest extends Quest {
     public TrainerGrowthQuest(QuestType quest, String questName,
-                              String questDescription, int questReward) {
-        super(quest, questName, questDescription, questReward);
+                              String questDescription, int questReward, int completionGoal) {
+        super(quest, questName, questDescription, questReward, completionGoal);
     }
 
     //TODO: levelUpTrainer, becomeMaster, etc

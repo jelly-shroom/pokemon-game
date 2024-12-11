@@ -27,16 +27,17 @@ public class MasterTrainer extends Trainer {
      * all quests.
      * @return
      */
-    public Quest createQuest(String questName, String questDescription, int questReward, QuestType questType) {
+    public Quest createQuest(String questName, String questDescription, int questReward,
+                             QuestType questType, int completionGoal) {
         Quest newQuest = null;
         if (questType == QuestType.BATTLE) {
-            newQuest = new BattleQuest(questType, questName, questDescription, questReward);
+            newQuest = new BattleQuest(questType, questName, questDescription, questReward, completionGoal);
         } else if (questType == QuestType.BONDING) {
-            newQuest = new BondQuest(questType, questName, questDescription, questReward);
+            newQuest = new BondQuest(questType, questName, questDescription, questReward, completionGoal);
         } else if (questType == QuestType.TRAINER_GROWTH){
-            newQuest = new TrainerGrowthQuest(questType, questName, questDescription, questReward);
+            newQuest = new TrainerGrowthQuest(questType, questName, questDescription, questReward, completionGoal);
         } else if (questType == QuestType.POKEMON_GROWTH){
-            newQuest = new PokemonGrowthQuest(questType, questName, questDescription, questReward);
+            newQuest = new PokemonGrowthQuest(questType, questName, questDescription, questReward, completionGoal);
         }
 
         //numerically increment the key for the quest

@@ -1,10 +1,7 @@
 package me.jessicasheng.pokemonGame.controller;
 
 import me.jessicasheng.pokemonGame.model.quests.Quest;
-import me.jessicasheng.pokemonGame.model.quests.QuestType;
-import me.jessicasheng.pokemonGame.model.trainer.ApprenticeTrainer;
-import me.jessicasheng.pokemonGame.model.trainer.MasterTrainer;
-import me.jessicasheng.pokemonGame.model.trainer.Trainer;
+import me.jessicasheng.pokemonGame.model.trainer.*;
 
 import java.io.*;
 import java.io.ObjectInputStream;

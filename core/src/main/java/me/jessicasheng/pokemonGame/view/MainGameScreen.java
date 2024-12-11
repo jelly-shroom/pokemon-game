@@ -253,10 +253,10 @@ public class MainGameScreen implements Screen {
     private void showCreateQuestDialog() {
         if (!(trainer instanceof MasterTrainer)) return;
 
-        TextField nameField = new TextField("", skin);
-        TextField descriptionField = new TextField("", skin);
-        TextField rewardField = new TextField("", skin);
         SelectBox<QuestType> typeSelectBox = new SelectBox<>(skin);
+        TextField nameField = new TextField("", skin);
+        TextField goalField = new TextField("", skin);
+        TextField rewardField = new TextField("", skin);
         typeSelectBox.setItems(QuestType.values());
 
         // Initialize the dialog
@@ -265,13 +265,15 @@ public class MainGameScreen implements Screen {
             protected void result(Object object) {
                 if (Boolean.TRUE.equals(object)) {
                     try {
-                        String name = nameField.getText();
-                        String description = descriptionField.getText();
-                        int reward = Integer.parseInt(rewardField.getText());
                         QuestType type = typeSelectBox.getSelected();
+                        String name = nameField.getText().trim();
+                        int goal = Integer.parseInt(goalField.getText().trim());
+                        // Generate quest description based on type and goal
+                        String description = generateQuestDescription(type, goal);
+                        int reward = Integer.parseInt(rewardField.getText().trim());
 
                         // Create and add the quest
-                        ((MasterTrainer) trainer).createQuest(name, description, reward, type);
+                        ((MasterTrainer) trainer).createQuest(name, description, reward, type, goal);
 
                         refreshQuests();
 
@@ -297,8 +299,8 @@ public class MainGameScreen implements Screen {
         nameGroup.addActor(nameField);
 
         HorizontalGroup descriptionGroup = new HorizontalGroup().space(10);
-        descriptionGroup.addActor(new Label("Description:", skin));
-        descriptionGroup.addActor(descriptionField);
+        descriptionGroup.addActor(new Label("Completion Goal (number):", skin));
+        descriptionGroup.addActor(goalField);
 
         HorizontalGroup rewardGroup = new HorizontalGroup().space(10);
         rewardGroup.addActor(new Label("Reward:", skin));
@@ -323,6 +325,24 @@ public class MainGameScreen implements Screen {
 
         // Show the dialog
         dialog.show(stage);
+    }
+
+    /**
+     * Generates a quest description based on its type and completion goal.
+     */
+    private String generateQuestDescription(QuestType type, int goal) {
+        switch (type) {
+            case BATTLE:
+                return "Battle a wild Pokémon " + goal + " times.";
+            case BONDING:
+                return "Feed your Pokémon " + goal + " times.";
+            case TRAINER_GROWTH:
+                return "Gain " + goal + " trainer levels.";
+            case POKEMON_GROWTH:
+                return "Level up your Pokémon " + goal + " times.";
+            default:
+                return "Complete this quest.";
+        }
     }
 
     /**
