@@ -32,7 +32,6 @@ public class QuestDataManager {
             scanner.nextLine();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                System.out.println("Reading line: " + line);
                 String[] parts = line.split(",");
                 if (parts.length == 7) {
                     String name = parts[0];
@@ -195,6 +194,30 @@ public class QuestDataManager {
             System.out.println("Quest takers file not found. Starting with an empty map.");
         }
     }
+
+    public static void updateQuest(Quest updatedQuest) {
+        List<Quest> allQuests = loadQuests();
+
+        // Replace the updated quest in memory
+        for (int i = 0; i < allQuests.size(); i++) {
+            if (allQuests.get(i).getQuestID() == updatedQuest.getQuestID()) {
+                allQuests.set(i, updatedQuest);
+                break;
+            }
+        }
+
+        // Rewrite all quests to the CSV file
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_FILE))) {
+            writer.println("Name,Description,Reward,Type,Goal,Progress,ID"); // Write header
+            for (Quest quest : allQuests) {
+                writer.println(formatQuestForCsv(quest));
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating quests in CSV file.");
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * gets list of quest takers

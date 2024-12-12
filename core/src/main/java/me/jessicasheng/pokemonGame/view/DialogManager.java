@@ -34,39 +34,31 @@ public class DialogManager {
         Table contentTable = dialog.getContentTable();
         Label messageLabel = new Label(message, skin);
         messageLabel.setWrap(true);
-        contentTable.add(messageLabel).width(200).pad(20);
+        contentTable.add(messageLabel).width(200).pad(20).row();
 
         // Button layout
-        if (button1Text != null) {
-            TextButton button1 = new TextButton(button1Text, skin);
-            button1.pad(8);
-            button1.addListener(new ChangeListener() {
+        checkIfNull(button1Text, button1Action, dialog);
+        checkIfNull(button2Text, button2Action, dialog);
+
+        dialog.show(stage);
+    }
+
+    private void checkIfNull(String buttonText, Runnable buttonAction, Dialog dialog) {
+        if (buttonText != null) {
+            TextButton button = new TextButton(buttonText, skin);
+            button.pad(8);
+            button.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    if (button1Action != null) {
-                        button1Action.run();
-
+                    if (buttonAction != null) {
+                        buttonAction.run();
+                        System.out.println("Button clicked. Running: " + buttonAction);
                     }
                     dialog.hide();
                 }
             });
-            dialog.button(button1);
+            dialog.button(button);
         }
-
-        if (button2Text != null) {
-            TextButton button2 = new TextButton(button2Text, skin);
-            button2.pad(8);
-            button2.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    button2Action.run();
-                    dialog.hide();
-                }
-            });
-            dialog.button(button2);
-        }
-
-        dialog.show(stage);
     }
 
     public void showError(String message) {

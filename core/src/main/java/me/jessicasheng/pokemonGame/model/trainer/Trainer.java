@@ -5,6 +5,7 @@ import java.util.*;
 import me.jessicasheng.pokemonGame.model.BattleCapable;
 import me.jessicasheng.pokemonGame.model.pokemon.*;
 import me.jessicasheng.pokemonGame.model.Pokeball;
+import me.jessicasheng.pokemonGame.model.quests.BattleQuest;
 import me.jessicasheng.pokemonGame.model.quests.Quest;
 import me.jessicasheng.pokemonGame.model.quests.QuestType;
 
@@ -39,6 +40,20 @@ public abstract class Trainer implements Serializable, BattleCapable {
         this.trainerType = trainerType;
     }
 
+    //perplexity code to create a listener interface
+    public interface TrainerListener {
+        void onBattleInitiated(WildPokemon wildPokemon);
+        void onCaptureAttempt(WildPokemon wildPokemon, boolean success);
+        void onFlee(Object entity);
+        void onQuestProgressUpdated(String questName, int progress, int goal);
+    }
+
+    private TrainerListener listener;
+
+    public void setTrainerListener(TrainerListener listener) {
+        this.listener = listener;
+    }
+
     /**
      * Adds a Pokemon to the Trainer's ownedPokemon list if Trainer successfully
      * catches the Pokemon.
@@ -58,15 +73,11 @@ public abstract class Trainer implements Serializable, BattleCapable {
         if (captured) {
             // Add Pokémon to owned list
             ownedPokemon.add(pokemon);
-            System.out.println("You successfully captured " + pokemon.getName() + "!");
-        } else {
-            System.out.println(pokemon.getName() + " escaped!");
         }
+        usePokeball(pokeball);
 
-        // Use up one Pokéball
-        if (!usePokeball(pokeball)) {
-            System.out.println("You don't have any more " + pokeball.name() + "s!");
-        }
+
+        if (listener != null) listener.onCaptureAttempt(pokemon, captured);
 
         return captured;
     }
@@ -75,26 +86,45 @@ public abstract class Trainer implements Serializable, BattleCapable {
     public void initiateBattle(Object opponent) {
         if (opponent instanceof WildPokemon) {
             WildPokemon wildPokemon = (WildPokemon) opponent;
+            System.out.println("Initiating battle with: " + wildPokemon.getName());
+
             Random random = new Random();
 
             // Determine if the Pokémon flees
             boolean pokemonFlees = random.nextBoolean(); // 50% chance for fleeing
             if (pokemonFlees) {
                 System.out.println(wildPokemon.getName() + " fled from the battle!");
+
+                if (listener != null) listener.onFlee(wildPokemon);
                 return;
             }
 
             // Count towards active battle quest if applicable
             if (this instanceof ApprenticeTrainer) {
                 ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) this;
-                Quest activeQuest = apprenticeTrainer.getActiveQuests().get(QuestType.BATTLE);
-                if (activeQuest != null) {
-                    activeQuest.incrementProgress(); // Increment quest progress
-                    System.out.println("Your active battle quest progress has been updated!");
+
+                Map<Integer, Quest> activeQuests = apprenticeTrainer.getActiveQuests();
+                for (Quest quest : activeQuests.values()) {
+                    if (quest instanceof BattleQuest) {
+                        quest.incrementProgress(() -> {
+                            // Notify view layer through a callback
+                            System.out.println("Quest progress updated for: " + quest.getQuestName());
+                            if (listener != null)
+                                listener.onQuestProgressUpdated(quest.getQuestName(),
+                                    quest.getProgress(), quest.getCompletionGoal());
+                        });
+
+                        if (quest.getProgress() >= quest.getCompletionGoal()) {
+                            System.out.println("You completed the battle quest: " + quest.getQuestName());
+                            apprenticeTrainer.completeQuest(quest);
+                        }
+                        break; // Increment only one battle quest at a time
+                    }
                 }
             }
-
             System.out.println("You defeated " + wildPokemon.getName() + "!");
+
+            if (listener != null) listener.onBattleInitiated(wildPokemon);
         }
     }
 

@@ -1,6 +1,7 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 
 import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+import me.jessicasheng.pokemonGame.model.BattleCapable;
 import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import me.jessicasheng.pokemonGame.view.UI;
@@ -14,7 +15,7 @@ import java.util.*;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public class MasterTrainer extends Trainer {
+public class MasterTrainer extends Trainer implements BattleCapable {
     private Map<Integer, Quest> createdQuests;
     private UI ui;
 
@@ -73,7 +74,7 @@ public class MasterTrainer extends Trainer {
      */
     @Override
     public void initiateBattle(Object pokemon) {
-
+        super.initiateBattle(pokemon);
     }
 
     /**
@@ -81,6 +82,6 @@ public class MasterTrainer extends Trainer {
      */
     @Override
     public void flee() {
-
+        super.flee();
     }
 }

@@ -1,5 +1,9 @@
 package me.jessicasheng.pokemonGame.model.quests;
 
+import me.jessicasheng.pokemonGame.model.trainer.ApprenticeTrainer;
+import me.jessicasheng.pokemonGame.model.trainer.Trainer;
+import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -110,8 +114,23 @@ public abstract class Quest implements Serializable {
         return progress;
     }
 
-    public void incrementProgress() {
-        this.progress += 1;
-    }
+    public void incrementProgress(Runnable onProgressUpdate) {
+        if (progress < completionGoal) {
+            progress++;
+            System.out.println("Progress updated: " + progress + "/" + completionGoal);
 
+            if (onProgressUpdate != null) {
+                onProgressUpdate.run(); // Notify the UI about the progress update
+            }
+
+            if (progress == completionGoal) {
+                System.out.println("Quest completed: " + questName);
+            }
+
+            QuestDataManager.updateQuest(this);
+
+        } else {
+            System.out.println("Quest already completed.");
+        }
+    }
 }

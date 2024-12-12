@@ -40,7 +40,10 @@ public class MainGameScreen implements Screen {
     public MainGameScreen(Main app, Trainer trainer) {
         this.app = app;
         this.trainer = trainer;
+        System.out.println("Trainer: " + trainer.getName() + " of type: " + trainer.getClass().getSimpleName());
     }
+
+
 
     @Override
     public void show() {
@@ -53,6 +56,8 @@ public class MainGameScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        setupTrainerListener();
+
         // trainer Info
         Label displayNameLabel = new Label("Trainer: " + trainer.getName(), skin);
         Label levelLabel = new Label("Level: " + trainer.getLevel(), skin);
@@ -61,17 +66,12 @@ public class MainGameScreen implements Screen {
         Label experienceLabel = new Label("Experience: " + trainer.getExperience(), skin); // Example experience calculation
         Label ownedPokemonLabel = new Label("Owned Pokemon: " + trainer.getOwnedPokemon().size(), skin);
 
-        //TODO: implement this properly
-//        Label pokeballListLable = new Label("Pokeballs: " + trainer.getPokeballInventory().size(), skin);
-//        Label activeQuestLabel = new Label("Active Quest: " + (((ApprenticeTrainer) trainer).getActiveQuest() != null ? trainer.getActiveQuest().getDescription() : "None"), skin);
         // Pokeball Inventory Table
         Table pokeballTable = createPokeballTable();
         ScrollPane questScrollPane = createQuestScrollPane();
 
-
         // random event button
         TextButton randomEventButton = new TextButton("Encounter Random Event", skin);
-
         randomEventButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -378,6 +378,45 @@ public class MainGameScreen implements Screen {
         dialogManager.showDialog("Random Event", message, "OK", null, null, null);
     }
 
+    //perplexity code to set up a listener
+    private void setupTrainerListener() {
+        trainer.setTrainerListener(new Trainer.TrainerListener() {
+            @Override
+            public void onBattleInitiated(WildPokemon wildPokemon) {
+                //TODO: make more robust
+                dialogManager.showDialog("Battle Result",
+                    "You defeated " + wildPokemon.getName() + "!",
+                    "OK", null, null, null);
+            }
+
+            @Override
+            public void onCaptureAttempt(WildPokemon wildPokemon, boolean success) {
+                String resultMessage = success ?
+                    "You successfully captured " + wildPokemon.getName() + "!" :
+                    wildPokemon.getName() + " escaped!";
+                dialogManager.showDialog("Capture Result", resultMessage, "OK", null, null, null);
+            }
+
+            @Override
+            public void onFlee(Object entity) {
+                String name = entity instanceof WildPokemon ?
+                    ((WildPokemon) entity).getName() : ((Trainer) entity).getName();
+                dialogManager.showDialog("Battle Result",
+                    name + " fled from the battle!",
+                    "OK", null, null, null);
+            }
+
+            @Override
+            public void onQuestProgressUpdated(String questName, int progress, int goal) {
+                dialogManager.showDialog(
+                    "Quest Progress",
+                    "Progress updated for quest: " + questName +
+                        "\n" + progress + "/" + goal,
+                    "OK", null, null, null);
+            }
+        });
+    }
+
     /**
      * generates a random Wild Pokemon for the player to encounter.
      */
@@ -393,16 +432,14 @@ public class MainGameScreen implements Screen {
 
     private void handleWildPokemonEncounter(WildPokemon wildPokemon) {
         Random random = new Random();
-        boolean pokemonWantsToFight = random.nextBoolean(); // 50% chance to initiate a battle
+        boolean pokemonWantsToFight = random.nextBoolean();
 
         if (pokemonWantsToFight) {
-            // Wild Pokémon initiates battle
             dialogManager.showDialog("Wild Pokémon Battle",
                 wildPokemon.getName() + " wants to fight!",
-                "Flee", () -> trainer.flee(),
+                "Flee", trainer::flee,
                 "Fight", () -> trainer.initiateBattle(wildPokemon));
         } else {
-            // Wild Pokémon is passive; give options to fight or capture
             dialogManager.showDialog("Wild Pokémon Encounter",
                 wildPokemon.getName() + " is passive. What do you want to do?",
                 "Capture", () -> showPokeballSelectionDialog(wildPokemon),
@@ -452,10 +489,6 @@ public class MainGameScreen implements Screen {
         pokeballDialog.button("Cancel").padTop(10); // Add a cancel button
         pokeballDialog.show(stage);
     }
-
-
-
-
 
 
     @Override

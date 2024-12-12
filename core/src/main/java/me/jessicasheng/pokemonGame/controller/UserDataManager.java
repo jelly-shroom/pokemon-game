@@ -75,7 +75,7 @@ public class UserDataManager {
      * @return
      */
     private Map<Integer, Quest> loadActiveQuests(ApprenticeTrainer apprentice) {
-        Map<Integer, Quest> activeQuests = new HashMap<>();
+        Map<Integer, Quest> activeQuests = apprentice.getActiveQuests();
         List<Quest> allQuests = QuestDataManager.loadQuests();
 
         // Ensure questTakers map is loaded

@@ -13,5 +13,4 @@ public class BattleQuest extends Quest{
         super(quest, questName, questDescription, questReward, completionGoal, progress);
     }
 
-    //TODO: battleWildPokemon, winBattle, loseBattle
 }

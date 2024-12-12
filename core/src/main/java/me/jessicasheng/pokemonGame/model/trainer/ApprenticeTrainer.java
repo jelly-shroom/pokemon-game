@@ -1,5 +1,6 @@
 package me.jessicasheng.pokemonGame.model.trainer;
 import me.jessicasheng.pokemonGame.controller.QuestDataManager;
+import me.jessicasheng.pokemonGame.model.BattleCapable;
 import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
 import me.jessicasheng.pokemonGame.model.quests.*;
 import java.util.*;
@@ -11,7 +12,7 @@ import java.util.*;
     ITP 265, Fall 2024, Tea section
     Date created: 12/4/24
 */
-public class ApprenticeTrainer extends Trainer {
+public class ApprenticeTrainer extends Trainer implements BattleCapable {
     private Map<Integer, Quest> activeQuests;
 
     public ApprenticeTrainer(String username, String password, String name) {
@@ -38,7 +39,7 @@ public class ApprenticeTrainer extends Trainer {
      */
     @Override
     public void initiateBattle(Object pokemon) {
-
+        super.initiateBattle(pokemon);
     }
 
     /**
@@ -46,6 +47,10 @@ public class ApprenticeTrainer extends Trainer {
      */
     @Override
     public void flee() {
+        super.flee();
+    }
 
+    public void completeQuest(Quest quest) {
+        this.getActiveQuests().remove(quest.getQuestID());
     }
 }

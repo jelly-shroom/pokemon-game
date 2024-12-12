@@ -1,8 +1,7 @@
-Quests: NAME,DESCRIPTION,REWARD,TYPE,GOAL,PROGRESS,QUESTID
-
-Participate in one battle,Battle against 1 wild Pokemon,5,BATTLE,1,0,1
-Catch your first pokemon,Successfully catch 1 wild Pokemon,10,POKEMON_GROWTH,1,0,2
-first battle,Battle a wild Pokémon 1 times.,10,BATTLE,1,0,-103710943
-idk,Feed your Pokémon 1 times.,1,BONDING,1,0,-317193540
-test,Feed your Pokémon 10 times.,4,BONDING,10,0,1913820803
-second test,Level up your Pokémon 2 times.,1,POKEMON_GROWTH,2,0,-375301087
+Name,Description,Reward,Type,Goal,Progress,ID
+Participate in one battle,Battle against 1 wild Pokemon,5,BATTLE,1,1,-60694353
+Catch your first pokemon,Successfully catch 1 wild Pokemon,10,POKEMON_GROWTH,1,0,1430984826
+first battle,Battle a wild Pokémon 1 times.,10,BATTLE,1,1,899931213
+idk,Feed your Pokémon 1 times.,1,BONDING,1,0,885592945
+test,Feed your Pokémon 10 times.,4,BONDING,10,0,-1769865284
+second test,Level up your Pokémon 2 times.,1,POKEMON_GROWTH,2,0,-861378317
