@@ -382,11 +382,18 @@ public class MainGameScreen implements Screen {
     private void setupTrainerListener() {
         trainer.setTrainerListener(new Trainer.TrainerListener() {
             @Override
-            public void onBattleInitiated(WildPokemon wildPokemon) {
-                //TODO: make more robust
-                dialogManager.showDialog("Battle Result",
-                    "You defeated " + wildPokemon.getName() + "!",
-                    "OK", null, null, null);
+            public void onBattleInitiated(Object thisEntity, Object opponent) {
+                if (thisEntity instanceof Trainer) {
+                    dialogManager.showDialog("Battle Result",
+                        "You defeated " + ((WildPokemon) opponent).getName() + "!",
+                        "OK", null, null, null);
+                } else if (thisEntity instanceof WildPokemon) {
+                    WildPokemon thisPokemon = ((WildPokemon) thisEntity);
+                    dialogManager.showDialog("Pokemon Battle",
+                        "You failed to flee and are forced to battle!",
+                        "See battle result", () -> getBattleResult(thisPokemon), null, null);
+                }
+
             }
 
             @Override
@@ -399,11 +406,16 @@ public class MainGameScreen implements Screen {
 
             @Override
             public void onFlee(Object entity) {
-                String name = entity instanceof WildPokemon ?
-                    ((WildPokemon) entity).getName() : ((Trainer) entity).getName();
-                dialogManager.showDialog("Battle Result",
-                    name + " fled from the battle!",
-                    "OK", null, null, null);
+                if (entity instanceof Trainer) {
+                    dialogManager.showDialog("Battle Result",
+                        "You fled from the battle!",
+                        "OK", null, null, null);
+                } else {
+                    WildPokemon thisPokemon = ((WildPokemon) entity);
+                    dialogManager.showDialog("Battle Result",
+                        thisPokemon.getName() + " fled from the battle!",
+                        "OK", null, null, null);
+                }
             }
 
             @Override
@@ -415,6 +427,21 @@ public class MainGameScreen implements Screen {
                     "OK", null, null, null);
             }
         });
+    }
+
+    //battle result for when a pokemon tries to initiate battle and succeeds
+    public void getBattleResult(WildPokemon pokemon) {
+        boolean getBattleResult = new Random().nextBoolean();
+
+        if (getBattleResult) {
+            dialogManager.showDialog("Battle Result",
+                "You defeated " + pokemon.getName() + "!",
+                "OK", null, null, null);
+        } else {
+            dialogManager.showDialog("Battle Result",
+                "You lost to " + pokemon.getName() + "!",
+                "OK", null, null, null);
+        }
     }
 
     /**
@@ -437,8 +464,7 @@ public class MainGameScreen implements Screen {
         if (pokemonWantsToFight) {
             dialogManager.showDialog("Wild Pokémon Battle",
                 wildPokemon.getName() + " wants to fight!",
-                "Flee", trainer::flee,
-                "Fight", () -> trainer.initiateBattle(wildPokemon));
+                "Flee", () -> wildPokemon.initiateBattle(trainer), null, null);
         } else {
             dialogManager.showDialog("Wild Pokémon Encounter",
                 wildPokemon.getName() + " is passive. What do you want to do?",

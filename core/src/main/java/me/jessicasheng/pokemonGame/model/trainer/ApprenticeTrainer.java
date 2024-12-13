@@ -46,8 +46,8 @@ public class ApprenticeTrainer extends Trainer implements BattleCapable {
      *
      */
     @Override
-    public void flee() {
-        super.flee();
+    public boolean flee() {
+        return super.flee();
     }
 
     public void completeQuest(Quest quest) {

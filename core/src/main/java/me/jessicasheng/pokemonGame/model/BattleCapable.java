@@ -11,5 +11,5 @@ import me.jessicasheng.pokemonGame.model.pokemon.Pokemon;
 */
 public interface BattleCapable {
     void initiateBattle(Object opponent);
-    void flee();
+    boolean flee();
 }

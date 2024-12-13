@@ -42,17 +42,16 @@ public abstract class Trainer implements Serializable, BattleCapable {
 
     //perplexity code to create a listener interface
     public interface TrainerListener {
-        void onBattleInitiated(WildPokemon wildPokemon);
+        void onBattleInitiated(Object thisEntity, Object opponent);
         void onCaptureAttempt(WildPokemon wildPokemon, boolean success);
         void onFlee(Object entity);
         void onQuestProgressUpdated(String questName, int progress, int goal);
     }
-
     private TrainerListener listener;
-
     public void setTrainerListener(TrainerListener listener) {
         this.listener = listener;
     }
+    public TrainerListener getListener() { return listener; }
 
     /**
      * Adds a Pokemon to the Trainer's ownedPokemon list if Trainer successfully
@@ -60,11 +59,11 @@ public abstract class Trainer implements Serializable, BattleCapable {
      * @return
      */
     public boolean attemptCapture(WildPokemon pokemon, Pokeball pokeball) {
-        // Get the capture rate of the Pokémon and the Pokéball
+        // get the capture rate of the pokemon and ball
         double pokemonCatchRate = pokemon.getCatchRate();
         double pokeballCatchRate = pokeball.getCatchRate();
 
-        // Calculate total catch rate
+        //  total catch rate
         double totalCatchRate = pokemonCatchRate + pokeballCatchRate;
         double randomValue = Math.random() * 100;
 
@@ -99,32 +98,36 @@ public abstract class Trainer implements Serializable, BattleCapable {
                 return;
             }
 
-            // Count towards active battle quest if applicable
-            if (this instanceof ApprenticeTrainer) {
-                ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) this;
-
-                Map<Integer, Quest> activeQuests = apprenticeTrainer.getActiveQuests();
-                for (Quest quest : activeQuests.values()) {
-                    if (quest instanceof BattleQuest) {
-                        quest.incrementProgress(() -> {
-                            // Notify view layer through a callback
-                            System.out.println("Quest progress updated for: " + quest.getQuestName());
-                            if (listener != null)
-                                listener.onQuestProgressUpdated(quest.getQuestName(),
-                                    quest.getProgress(), quest.getCompletionGoal());
-                        });
-
-                        if (quest.getProgress() >= quest.getCompletionGoal()) {
-                            System.out.println("You completed the battle quest: " + quest.getQuestName());
-                            apprenticeTrainer.completeQuest(quest);
-                        }
-                        break; // Increment only one battle quest at a time
-                    }
-                }
-            }
+            progressBattleQuest(this);
             System.out.println("You defeated " + wildPokemon.getName() + "!");
 
-            if (listener != null) listener.onBattleInitiated(wildPokemon);
+            if (listener != null) listener.onBattleInitiated(this, wildPokemon);
+        }
+    }
+
+    public void progressBattleQuest(Trainer trainer){
+        // Count towards active battle quest if applicable
+        if (trainer instanceof ApprenticeTrainer) {
+            ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) trainer;
+
+            Map<Integer, Quest> activeQuests = apprenticeTrainer.getActiveQuests();
+            for (Quest quest : activeQuests.values()) {
+                if (quest instanceof BattleQuest) {
+                    quest.incrementProgress(() -> {
+                        // Notify view layer through a callback
+                        System.out.println("Quest progress updated for: " + quest.getQuestName());
+                        if (listener != null)
+                            listener.onQuestProgressUpdated(quest.getQuestName(),
+                                quest.getProgress(), quest.getCompletionGoal());
+                    });
+
+                    if (quest.getProgress() >= quest.getCompletionGoal()) {
+                        System.out.println("You completed the battle quest: " + quest.getQuestName());
+                        apprenticeTrainer.completeQuest(quest);
+                    }
+                    break; // Increment only one battle quest at a time
+                }
+            }
         }
     }
 
@@ -132,8 +135,9 @@ public abstract class Trainer implements Serializable, BattleCapable {
      * Allows the trainer to flee from a battle.
      */
     @Override
-    public void flee() {
-        System.out.println("You fled from the battle!");
+    public boolean flee() {
+        boolean fleeSuccess = new Random().nextBoolean();
+        return fleeSuccess;
     }
 
 

@@ -81,7 +81,7 @@ public class MasterTrainer extends Trainer implements BattleCapable {
      *
      */
     @Override
-    public void flee() {
-        super.flee();
+    public boolean flee() {
+        return super.flee();
     }
 }
