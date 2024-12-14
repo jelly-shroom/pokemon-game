@@ -27,6 +27,7 @@ public class WildPokemon extends Pokemon implements BattleCapable {
     }
 
     /**
+     * Initiates a battle with a trainer
      * @param trainer
      */
     @Override
@@ -52,7 +53,7 @@ public class WildPokemon extends Pokemon implements BattleCapable {
     }
 
     /**
-     *
+     * Always returns true for wild pokemon
      */
     @Override
     public boolean flee() {
