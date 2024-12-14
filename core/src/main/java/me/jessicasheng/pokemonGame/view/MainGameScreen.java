@@ -21,8 +21,7 @@ import me.jessicasheng.pokemonGame.controller.PokemonDataReader;
 import me.jessicasheng.pokemonGame.model.Pokeball;
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonType;
 import me.jessicasheng.pokemonGame.model.pokemon.WildPokemon;
-import me.jessicasheng.pokemonGame.model.quests.Quest;
-import me.jessicasheng.pokemonGame.model.quests.QuestType;
+import me.jessicasheng.pokemonGame.model.quests.*;
 import me.jessicasheng.pokemonGame.model.trainer.ApprenticeTrainer;
 import me.jessicasheng.pokemonGame.model.trainer.MasterTrainer;
 import me.jessicasheng.pokemonGame.model.trainer.Trainer;
@@ -56,6 +55,8 @@ public class MainGameScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
+        //listener for anything that happens to the trainer, mostly
+        //for battle functionality
         setupTrainerListener();
 
         // trainer Info
@@ -109,6 +110,7 @@ public class MainGameScreen implements Screen {
 
             table.add(takeQuestButton).width(200).height(50).padBottom(20).row();
 
+            //Otherwise, show a button to create quests for MasterTrainer
         } else if (trainer instanceof MasterTrainer) {
             TextButton createQuestButton = new TextButton("Create Quest", skin);
             createQuestButton.addListener(new ChangeListener() {
@@ -175,7 +177,7 @@ public class MainGameScreen implements Screen {
 
 
     /**
-     * refreshes UI
+     * refreshes UI. Made with Perplexity's help
      */
     //needed to make sure ui updates when quests are added or taken on
     private void refreshQuests() {
@@ -192,7 +194,7 @@ public class MainGameScreen implements Screen {
      */
     private void showAvailableQuestsDialog() {
         if (!(trainer instanceof ApprenticeTrainer)) return;
-
+        //first get data
         ApprenticeTrainer apprentice = (ApprenticeTrainer) trainer;
         List<Quest> availableQuests = QuestDataManager.loadQuests();
 
@@ -220,14 +222,11 @@ public class MainGameScreen implements Screen {
                 takeQuestButton.addListener(new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent event, Actor actor) {
-                        // Add the quest to the apprentice's active quests
                         apprentice.acceptQuest(quest);
                         QuestDataManager.addTaker(quest.getQuestID(), apprentice.getUsername());
 
-                        // Refresh UI
+                        // Refresh UI after taking a quest
                         refreshQuests();
-
-                        // Close the dialog
                         dialog.hide();
                     }
                 });
@@ -268,17 +267,13 @@ public class MainGameScreen implements Screen {
                         QuestType type = typeSelectBox.getSelected();
                         String name = nameField.getText().trim();
                         int goal = Integer.parseInt(goalField.getText().trim());
-                        // Generate quest description based on type and goal
                         String description = generateQuestDescription(type, goal);
                         int reward = Integer.parseInt(rewardField.getText().trim());
 
                         // Create and add the quest
                         ((MasterTrainer) trainer).createQuest(name, description, reward, type, goal);
-
                         refreshQuests();
-
-
-                        this.hide(); // Close the dialog
+                        this.hide();
                     } catch (NumberFormatException e) {
                         dialogManager.showDialog("Error", "Invalid reward amount.", "OK", null, null, null);
                     }
@@ -350,7 +345,7 @@ public class MainGameScreen implements Screen {
      */
     private void handleRandomEvent() {
         Random random = new Random();
-        int eventType = random.nextInt(3);
+        int eventType = random.nextInt(6);
 
         String message;
         switch (eventType) {
@@ -366,9 +361,14 @@ public class MainGameScreen implements Screen {
                 message = "You encountered a wild Pokémon!";
                 break;
             case 2:
-                // gain experience
-                trainer.levelUp();
+                //level up
+                handleExperienceGain();
                 message = "You gained experience and leveled up!";
+                break;
+            case 3:
+                // Found food to feed Pokémon
+                handleFoundFOod();
+                message = "You found food to feed your Pokémon!";
                 break;
             default:
                 message = "Nothing happened...";
@@ -378,15 +378,72 @@ public class MainGameScreen implements Screen {
         dialogManager.showDialog("Random Event", message, "OK", null, null, null);
     }
 
+    /**
+     // Progress pokemon growtih quest if applicable
+     *
+     */
+    private void handleFoundFOod() {
+        if (trainer instanceof ApprenticeTrainer) {
+            ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) trainer;
+            Map<Integer, Quest> activeQuests = apprenticeTrainer.getActiveQuests();
+            for (Quest quest : activeQuests.values()) {
+                if (quest instanceof BondQuest) {
+                    quest.incrementProgress(() -> {
+                        dialogManager.showDialog(
+                            "Quest Progress",
+                            "Progress updated for quest: " + quest.getQuestName() +
+                                "\n" + quest.getProgress() + "/" + quest.getCompletionGoal(),
+                            "OK", null, null, null);
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * rogress trainer GROWTH_Quest if applicable
+     */
+    private void handleExperienceGain() {
+        trainer.levelUp();
+        if (trainer instanceof ApprenticeTrainer) {
+            ApprenticeTrainer apprenticeTrainer = (ApprenticeTrainer) trainer;
+            Map<Integer, Quest> activeQuests = apprenticeTrainer.getActiveQuests();
+            for (Quest quest : activeQuests.values()) {
+                if (quest instanceof TrainerGrowthQuest) {
+                    quest.incrementProgress(() -> {
+                        dialogManager.showDialog(
+                            "Quest Progress",
+                            "Progress updated for quest: " + quest.getQuestName() +
+                                "\n" + quest.getProgress() + "/" + quest.getCompletionGoal(),
+                            "OK", null, null, null);
+                    });
+                }
+            }
+        }
+    }
+
     //perplexity code to set up a listener
+
+    /**
+     * Sets up a listener for the Trainer object to handle battle events.
+     */
     private void setupTrainerListener() {
         trainer.setTrainerListener(new Trainer.TrainerListener() {
+
+            /**
+             * shows corresponding dialog when battle is initiated
+             * @param thisEntity
+             * @param opponent
+             */
             @Override
             public void onBattleInitiated(Object thisEntity, Object opponent) {
+                //if Trainer initiates battle, guarunteed to win
                 if (thisEntity instanceof Trainer) {
                     dialogManager.showDialog("Battle Result",
                         "You defeated " + ((WildPokemon) opponent).getName() + "!",
                         "OK", null, null, null);
+                //if a WildPokeon initiates a battle, 50% to lose and 50% to successfully
+                    //flee
                 } else if (thisEntity instanceof WildPokemon) {
                     WildPokemon thisPokemon = ((WildPokemon) thisEntity);
                     dialogManager.showDialog("Pokemon Battle",
@@ -396,6 +453,11 @@ public class MainGameScreen implements Screen {
 
             }
 
+            /**
+             * check success of capture attempt and shows dialog
+             * @param wildPokemon
+             * @param success
+             */
             @Override
             public void onCaptureAttempt(WildPokemon wildPokemon, boolean success) {
                 String resultMessage = success ?
@@ -404,6 +466,10 @@ public class MainGameScreen implements Screen {
                 dialogManager.showDialog("Capture Result", resultMessage, "OK", null, null, null);
             }
 
+            /**
+             * Shows dialog for when an entity tries to flee
+             * @param entity
+             */
             @Override
             public void onFlee(Object entity) {
                 if (entity instanceof Trainer) {
@@ -418,6 +484,12 @@ public class MainGameScreen implements Screen {
                 }
             }
 
+            /**
+             * dialog shows updates for quests
+             * @param questName
+             * @param progress
+             * @param goal
+             */
             @Override
             public void onQuestProgressUpdated(String questName, int progress, int goal) {
                 dialogManager.showDialog(
@@ -429,7 +501,10 @@ public class MainGameScreen implements Screen {
         });
     }
 
-    //battle result for when a pokemon tries to initiate battle and succeeds
+    /**
+     battle result for when a pokemon tries to initiate battle and succeeds
+     * @param pokemon
+     */
     public void getBattleResult(WildPokemon pokemon) {
         boolean getBattleResult = new Random().nextBoolean();
 
@@ -457,6 +532,10 @@ public class MainGameScreen implements Screen {
         return pokemonList.get(random.nextInt(pokemonList.size()));
     }
 
+    /**
+     * pokemon is either passive or aggressive
+     * @param wildPokemon
+     */
     private void handleWildPokemonEncounter(WildPokemon wildPokemon) {
         Random random = new Random();
         boolean pokemonWantsToFight = random.nextBoolean();
@@ -473,6 +552,10 @@ public class MainGameScreen implements Screen {
         }
     }
 
+    /**
+     * shows dialog to select a pokeball to capture a wild pokemon
+     * @param wildPokemon
+     */
     private void showPokeballSelectionDialog(WildPokemon wildPokemon) {
         Map<Integer, Pokeball> pokeballInventory = trainer.getPokeballInventory();
         if (pokeballInventory.isEmpty()) {
@@ -501,8 +584,6 @@ public class MainGameScreen implements Screen {
                             wildPokemon.getName() + " escaped!";
                         dialogManager.showDialog("Capture Result", resultMessage, "OK", null
                             , null, null);
-
-                        // Close the selection dialog
                         pokeballDialog.hide();
                     }
                 });
@@ -510,6 +591,7 @@ public class MainGameScreen implements Screen {
             }
         }
 
+        //Is a table, may go past viewable area
         ScrollPane scrollPane = new ScrollPane(pokeballTable, skin);
         pokeballDialog.getContentTable().add(scrollPane).width(300).height(200);
         pokeballDialog.button("Cancel").padTop(10); // Add a cancel button

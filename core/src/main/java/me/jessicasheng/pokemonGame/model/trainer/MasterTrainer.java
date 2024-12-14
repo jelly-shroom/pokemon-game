@@ -25,8 +25,8 @@ public class MasterTrainer extends Trainer implements BattleCapable {
     }
 
     /**
-     * Creates a Quest object and adds it to the master file of
-     * all quests.
+     * Creates a quest object and adds it to the master file of
+     * all quests
      * @return
      */
     public Quest createQuest(String questName, String questDescription, int questReward,
@@ -52,6 +52,10 @@ public class MasterTrainer extends Trainer implements BattleCapable {
         return newQuest;
     }
 
+    /**
+     * Removes a quest from the master file of all quests
+     * @param questID
+     */
     public void removeQuest(int questID) {
         if (createdQuests.containsKey(questID)) {
             createdQuests.remove(questID);
@@ -70,6 +74,7 @@ public class MasterTrainer extends Trainer implements BattleCapable {
     }
 
     /**
+     * initiates avainst qild pokemon
      * @param pokemon
      */
     @Override
@@ -78,7 +83,7 @@ public class MasterTrainer extends Trainer implements BattleCapable {
     }
 
     /**
-     *
+     *flees
      */
     @Override
     public boolean flee() {

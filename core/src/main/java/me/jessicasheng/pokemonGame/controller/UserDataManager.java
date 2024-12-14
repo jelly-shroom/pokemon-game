@@ -39,7 +39,7 @@ public class UserDataManager {
                     Trainer rawTrainer = entry.getValue();
                     Trainer trainer;
 
-                    // Check the trainer type and recreate the correct subclass
+                    // check the trainer type and recreate the correct subclass
                     if ("Apprentice".equalsIgnoreCase(rawTrainer.getTrainerType())) {
                         trainer = new ApprenticeTrainer(rawTrainer.getUsername(), rawTrainer.getPassword(), rawTrainer.getName());
                         ((ApprenticeTrainer) trainer).setActiveQuests(loadActiveQuests((ApprenticeTrainer) rawTrainer));
@@ -103,7 +103,7 @@ public class UserDataManager {
         Map<Integer, Quest> createdQuests = new HashMap<>();
         List<Quest> allQuests = QuestDataManager.loadQuests();
 
-        // Ensure questCreators map is loaded
+        // Load quest creators map
         QuestDataManager.loadQuestCreators();
 
         // Filter quests specific to this master
@@ -159,10 +159,11 @@ public class UserDataManager {
      */
     public boolean registerUser(String username, String password, String displayName) {
         boolean validUsername = true;
-        // Check if username already exists
+        //  if username already exists
         if (userDatabase.containsKey(username)) {
             validUsername = false;
         } else {
+            //defaults to apprentice
             Trainer newTrainer = new ApprenticeTrainer(username, password, displayName);
             userDatabase.put(username, newTrainer);
             saveUserData();

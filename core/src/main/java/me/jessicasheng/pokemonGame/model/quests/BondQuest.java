@@ -14,5 +14,4 @@ public class BondQuest extends Quest{
         super(quest, questName, questDescription, questReward, completionGoal, progress);
     }
 
-    //TODO: playWithPokemon, feedPokemon, etc
 }

@@ -14,14 +14,17 @@ import me.jessicasheng.pokemonGame.view.RegisterScreen;
 
 public class Main extends Game {
     private final Game app = this;
-
     private Trainer loggedInTrainer = null;
-
     private Screen mainMenuScreen;
     private Screen loginScreen;
     private Screen registerScreen;
     private Screen mainGameScreen;
 
+    /**
+     * set screen function that handles transition between screens
+     * taken from youtube and sample gradle projects
+     * @param screen may be {@code null}
+     */
     @Override
     public void setScreen(Screen screen){
         Screen old = getScreen();
@@ -31,11 +34,12 @@ public class Main extends Game {
         }
     }
 
-
+    /**
+     * sets things on creation of the game
+     */
     @Override
     public void create() {
         GdxNativesLoader.load();
-
         mainMenuScreen = new MainMenu(this);
         loginScreen = new LoginScreen(this);
         registerScreen = new RegisterScreen(this);
@@ -54,9 +58,9 @@ public class Main extends Game {
         setScreen(registerScreen);
     }
 
+    //needs to be initialized in this function because of loggedintrainer
     public void toGame() {
         mainGameScreen = new MainGameScreen(this, loggedInTrainer);
-
         setScreen(mainGameScreen);
     }
 
@@ -70,11 +74,14 @@ public class Main extends Game {
     public void resize(int width, int height) {
     }
 
+    //not sure what this does. it is there in every tutorial
     @Override
     public void dispose() {
         super.dispose();
         mainMenuScreen.dispose();
         loginScreen.dispose();
+        registerScreen.dispose();
+        mainGameScreen.dispose();
     }
 
     public Trainer getLoggedInTrainer() {

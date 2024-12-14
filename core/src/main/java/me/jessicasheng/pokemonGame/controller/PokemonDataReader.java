@@ -1,6 +1,5 @@
 package me.jessicasheng.pokemonGame.controller;
 
-
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonStages;
 import me.jessicasheng.pokemonGame.model.pokemon.PokemonType;
 import me.jessicasheng.pokemonGame.model.pokemon.WildPokemon;
@@ -12,9 +11,9 @@ public class PokemonDataReader {
     private static final String POKEMON_FILE = "pokemon.csv";
 
     /**
-     * Loads Pokemon data from a CSV file and returns a list of WildPokemon objects.
+     * Loads pokemon data from file and returns a list of WildPokemon
      *
-     * @return List of WildPokemon objects.
+     * @return wildpokemon list
      */
     public static List<WildPokemon> loadPokemonData() {
         List<WildPokemon> pokemonList = new ArrayList<>();
@@ -25,16 +24,18 @@ public class PokemonDataReader {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
-                if (parts.length >= 7) { // Ensure required fields are present
+                //7 required fields
+                if (parts.length >= 7) {
                     String name = parts[1];
                     PokemonType type1 = PokemonType.valueOf(parts[2].toUpperCase());
                     PokemonType type2 = parts[3].isEmpty() ? null : PokemonType.valueOf(parts[3].toUpperCase());
                     int hp = Integer.parseInt(parts[5]);
                     int baseAttack = Integer.parseInt(parts[6]);
 
-                    // Generate random level between 1 and 10
+                    // random pokemon level
                     int level = new Random().nextInt(10) + 1;
 
+                    //make wildpokemon and add to list
                     WildPokemon wildPokemon = new WildPokemon(name, type1, type2, hp, baseAttack,
                         level, PokemonStages.BASIC, 30.0);
                     pokemonList.add(wildPokemon);

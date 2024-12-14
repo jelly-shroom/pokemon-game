@@ -43,6 +43,12 @@ public class DialogManager {
         dialog.show(stage);
     }
 
+    /**
+     * checks if button text is null and adds button to dialog if not null
+     * @param buttonText
+     * @param buttonAction
+     * @param dialog
+     */
     private void checkIfNull(String buttonText, Runnable buttonAction, Dialog dialog) {
         if (buttonText != null) {
             TextButton button = new TextButton(buttonText, skin);
@@ -61,10 +67,19 @@ public class DialogManager {
         }
     }
 
+    /**
+     * error dialog
+     * @param message
+     */
     public void showError(String message) {
         showDialog("Error", message, "OK", null, null, null);
     }
 
+    /**
+     * Success dialog
+     * @param message
+     * @param onClose
+     */
     public void showSuccess(String message, Runnable onClose) {
         showDialog("Success", message, "OK", onClose, null, null);
     }

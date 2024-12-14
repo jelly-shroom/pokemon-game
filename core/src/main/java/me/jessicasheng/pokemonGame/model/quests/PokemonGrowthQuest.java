@@ -12,6 +12,4 @@ public class PokemonGrowthQuest extends Quest {
                      String questDescription, int questReward, int completionGoal, int progress) {
         super(quest, questName, questDescription, questReward, completionGoal, progress);
     }
-
-    //TODO: evolvePokemon, levelUpPokemon, capturePokemon, releasePokemon
 }

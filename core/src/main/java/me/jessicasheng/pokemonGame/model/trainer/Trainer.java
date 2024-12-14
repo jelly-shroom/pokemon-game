@@ -54,7 +54,7 @@ public abstract class Trainer implements Serializable, BattleCapable {
     public TrainerListener getListener() { return listener; }
 
     /**
-     * Adds a Pokemon to the Trainer's ownedPokemon list if Trainer successfully
+     * Adds a pokemon to the Trainer's ownedPokemon list if Trainer successfully
      * catches the Pokemon.
      * @return
      */
@@ -81,6 +81,10 @@ public abstract class Trainer implements Serializable, BattleCapable {
         return captured;
     }
 
+    /**
+     * Tries to initiate battle against a WildPokemon.
+     * @param opponent
+     */
     @Override
     public void initiateBattle(Object opponent) {
         if (opponent instanceof WildPokemon) {
@@ -89,11 +93,12 @@ public abstract class Trainer implements Serializable, BattleCapable {
 
             Random random = new Random();
 
-            // Determine if the Pokémon flees
+            // Check if pokemon flees
             boolean pokemonFlees = random.nextBoolean(); // 50% chance for fleeing
             if (pokemonFlees) {
                 System.out.println(wildPokemon.getName() + " fled from the battle!");
 
+                // Listens to the event of fleeing and notifies the view layer
                 if (listener != null) listener.onFlee(wildPokemon);
                 return;
             }
@@ -101,10 +106,15 @@ public abstract class Trainer implements Serializable, BattleCapable {
             progressBattleQuest(this);
             System.out.println("You defeated " + wildPokemon.getName() + "!");
 
+            // Listens to the initiating battle and notifies the view layer
             if (listener != null) listener.onBattleInitiated(this, wildPokemon);
         }
     }
 
+    /**
+     * Progresses the battle quest of the trainer
+     * @param trainer
+     */
     public void progressBattleQuest(Trainer trainer){
         // Count towards active battle quest if applicable
         if (trainer instanceof ApprenticeTrainer) {
@@ -114,7 +124,7 @@ public abstract class Trainer implements Serializable, BattleCapable {
             for (Quest quest : activeQuests.values()) {
                 if (quest instanceof BattleQuest) {
                     quest.incrementProgress(() -> {
-                        // Notify view layer through a callback
+                        // Notify view layer
                         System.out.println("Quest progress updated for: " + quest.getQuestName());
                         if (listener != null)
                             listener.onQuestProgressUpdated(quest.getQuestName(),
@@ -132,7 +142,7 @@ public abstract class Trainer implements Serializable, BattleCapable {
     }
 
     /**
-     * Allows the trainer to flee from a battle.
+     * Allows the trainer to flee from a battle with  a 50% chance
      */
     @Override
     public boolean flee() {
@@ -185,7 +195,7 @@ public abstract class Trainer implements Serializable, BattleCapable {
             Pokemon activePokemon = ownedPokemon.get(activeIndex);
             Pokemon newPokemon = ownedPokemon.get(newPokemonIndex);
 
-            // Check if the active Pokemon has more than 0 HP (is in battle)
+            // check if the active Pokemon has more than 0 HP (is in battle)
             if (activePokemon.getHp() > 0) {
                 Collections.swap(ownedPokemon, activeIndex, newPokemonIndex);
                 return true;

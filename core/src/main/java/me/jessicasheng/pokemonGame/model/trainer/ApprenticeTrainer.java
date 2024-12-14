@@ -20,6 +20,10 @@ public class ApprenticeTrainer extends Trainer implements BattleCapable {
         activeQuests = new HashMap<>();
     }
 
+    /**
+     * Accepts a quest and adds to activeQuests list
+     * @param quest
+     */
     public void acceptQuest(Quest quest) {
         activeQuests.put(quest.getQuestID(), quest);
         QuestDataManager.addTaker(quest.getQuestID(), getUsername());
@@ -35,6 +39,7 @@ public class ApprenticeTrainer extends Trainer implements BattleCapable {
     }
 
     /**
+     * Initiates a battle with a wild pokemon
      * @param pokemon
      */
     @Override
@@ -43,13 +48,17 @@ public class ApprenticeTrainer extends Trainer implements BattleCapable {
     }
 
     /**
-     *
+     *Fles from a battle
      */
     @Override
     public boolean flee() {
         return super.flee();
     }
 
+    /**
+     * Completes a quest and removes it from activeQuests list
+     * @param quest
+     */
     public void completeQuest(Quest quest) {
         this.getActiveQuests().remove(quest.getQuestID());
     }

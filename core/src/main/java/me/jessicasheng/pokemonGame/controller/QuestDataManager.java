@@ -21,9 +21,9 @@ public class QuestDataManager {
     static Map<Integer, List<String>> questTakers = new HashMap<>();
 
     /**
-     * reads quests from the CSV file and returns them as a list.
+     * reads quests from the file and returns list
      *
-     * @return List of quests from the file.
+     * @return
      */
     public static List<Quest> loadQuests() {
         List<Quest> quests = new ArrayList<>();
@@ -33,6 +33,8 @@ public class QuestDataManager {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
+
+                //7 required fields
                 if (parts.length == 7) {
                     String name = parts[0];
                     String description = parts[1];
@@ -42,8 +44,8 @@ public class QuestDataManager {
                     int progress = Integer.parseInt(parts[5]);
                     int questID = Integer.parseInt(parts[6]);
 
-
-                    // Create a new Quest object (use your concrete subclass if needed)
+                    // new quest object based on type.
+                    //used some ai to generate these repetitive statements
                     if (type == QuestType.BATTLE) {
                         quests.add(new BattleQuest(type, name, description, reward, goal, progress));
                     } else if (type == QuestType.BONDING) {
@@ -78,7 +80,7 @@ public class QuestDataManager {
             e.printStackTrace();
         }
 
-        // Save the creator of the quest
+        // save the creator of the quest
         questCreators.put(quest.getQuestID(), creatorUsername);
         saveQuestCreators();
     }
@@ -150,11 +152,14 @@ public class QuestDataManager {
      * loads quest creators from file
      */
     public static void loadQuestCreators() {
+        //clears first
         questCreators.clear();
         try (Scanner scanner = new Scanner(new File(QUEST_CREATOR_FILE))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
+
+                //2 required fields
                 if (parts.length == 2) {
                     int questId = Integer.parseInt(parts[0]);
                     String creatorUsername = parts[1];
@@ -184,7 +189,9 @@ public class QuestDataManager {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
-                if (parts.length > 1) {
+
+                //should have 2
+                if (parts.length == 2) {
                     int questId = Integer.parseInt(parts[0]);
                     List<String> takers = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
                     questTakers.put(questId, takers);
@@ -195,10 +202,13 @@ public class QuestDataManager {
         }
     }
 
+    /**
+     * tracks updates to quest progression (n/n completion)
+     * @param updatedQuest
+     */
     public static void updateQuest(Quest updatedQuest) {
         List<Quest> allQuests = loadQuests();
-
-        // Replace the updated quest in memory
+        // replace concerned quest
         for (int i = 0; i < allQuests.size(); i++) {
             if (allQuests.get(i).getQuestID() == updatedQuest.getQuestID()) {
                 allQuests.set(i, updatedQuest);
@@ -206,7 +216,7 @@ public class QuestDataManager {
             }
         }
 
-        // Rewrite all quests to the CSV file
+        // rewrite quests
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(QUEST_FILE))) {
             writer.println("Name,Description,Reward,Type,Goal,Progress,ID"); // Write header
             for (Quest quest : allQuests) {

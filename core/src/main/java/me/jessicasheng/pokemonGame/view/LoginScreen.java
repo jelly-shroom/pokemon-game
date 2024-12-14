@@ -26,26 +26,28 @@ public class LoginScreen implements Screen {
     }
 
     /**
-     * Handles the login process. If the username and password are valid, the user is transitioned to the game screen.
+     * Handles the login process. If the username and
+     * password are valid, the user is transitioned to the game screen.
      * @param username
      * @param password
      */
     private void handleLogin(String username, String password) {
+        //a field is empty
         if (username.isEmpty() || password.isEmpty()) {
             dialogManager.showError("Please fill in all fields");
             return;
         }
-
         if (userManager.validateUser(username, password)) {
             Trainer trainer = userManager.getTrainer(username);
 
+            // Successful validation and Trainer exists
             if (trainer != null) {
-                // Transition to the game screen with the trainer object
                 ((Main) app).setLoggedInTrainer(trainer);
                 ((Main) app).toGame();
             } else {
                 dialogManager.showError("Error loading trainer data. Please try again.");
             }
+            //Unsuccessful validation
         } else {
             dialogManager.showError("Invalid credentials. Please check your username and password.");
         }
@@ -56,13 +58,14 @@ public class LoginScreen implements Screen {
      */
     @Override
     public void show() {
+        //initiating some UI elements that are required. stage and skin are default
         stage = new Stage(new FitViewport(640, 480));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        //initiate dialog manager
         dialogManager = new DialogManager(skin, stage);
 
-
+        // UI stuff
         Table table = new Table();
-
         table.setFillParent(true);
 
         Label titleLabel = new Label("Login", skin);
@@ -83,8 +86,10 @@ public class LoginScreen implements Screen {
         loginButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                //get only text from fields
                 String username = usernameField.getText().trim();
                 String password = passwordField.getText().trim();
+                //check credentials
                 handleLogin(username, password);
             }
         });

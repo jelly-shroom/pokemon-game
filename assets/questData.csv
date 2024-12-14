@@ -1,7 +1,7 @@
 Name,Description,Reward,Type,Goal,Progress,ID
-Participate in one battle,Battle against 10 wild Pokemon,5,BATTLE,10,3,-132119679
-Catch your first pokemon,Successfully catch 1 wild Pokemon,10,POKEMON_GROWTH,1,0,932839830
-first battle,Battle a wild Pokémon 10 times.,10,BATTLE,10,1,-1977302671
-idk,Feed your Pokémon 1 times.,1,BONDING,1,0,1667431492
-test,Feed your Pokémon 10 times.,4,BONDING,10,0,-988026737
-second test,Level up your Pokémon 2 times.,1,POKEMON_GROWTH,2,0,-1359523313
+Participate in 10 battles,Battle against 10 wild Pokemon,5,BATTLE,10,0,1062200750
+First Battle,Battle a wild Pokémon 1 times.,10,BATTLE,1,1,-976530008
+Snack time!,Feed your Pokémon 1 times.,1,BONDING,1,1,917487498
+Gluttonous Pets,Feed your Pokémon 10 times.,4,BONDING,10,0,-2134280537
+A Friend Indeed,Feed your Pokémon 50 times.,10,BONDING,50,0,578695835
+level up once,Gain 1 trainer levels.,20,TRAINER_GROWTH,1,1,579978293

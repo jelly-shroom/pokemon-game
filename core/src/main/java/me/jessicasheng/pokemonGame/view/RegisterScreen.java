@@ -60,7 +60,6 @@ public class RegisterScreen implements Screen {
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         dialogManager = new DialogManager(skin, stage);
 
-
         //table styling
         Table table = new Table();
         table.setFillParent(true);
